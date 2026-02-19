@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:PSZK_MarsRoverProject"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
-    <Grid>
-
-    </Grid>
+    <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+        <Canvas x:Name="jatekter" Width="1050" Height="1050" Background="Black" />
+    </ScrollViewer>
 </Window>
