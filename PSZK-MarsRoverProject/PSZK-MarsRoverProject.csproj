@@ -10,6 +10,18 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Images\ground.png" />
+    <None Remove="Images\obstacle.png" />
+    <None Remove="Images\rover.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Images\ground.png" />
+    <Resource Include="Images\obstacle.png" />
+    <Resource Include="Images\rover.png" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Update="mars_map_50x50.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
