@@ -15,7 +15,7 @@
         </Grid.ColumnDefinitions>
 
         <ScrollViewer Grid.Column="0" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden" Background="#1e1e1e" x:Name="kamera">
-            <Canvas x:Name="jatekter" Width="2050" Height="2050" />
+            <Canvas x:Name="jatekter" Width="4100" Height="4100" />
         </ScrollViewer>
 
         <Border Grid.Column="1" Background="#2d2d2d" BorderBrush="#444" BorderThickness="2,0,0,0">

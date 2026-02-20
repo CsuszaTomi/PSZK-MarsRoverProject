@@ -37,19 +37,23 @@ namespace PSZK_MarsRoverProject
             {
                 for (int j = 0; j < terkep.GetLength(1); j++)
                 {
-                    Image talaj = new Image() { Width = 40, Height = 40 };
+                    Image talaj = new Image() 
+                    { 
+                        Width = 80, 
+                        Height = 80 
+                    };
                     string jel = terkep[i, j] == "R" ? "." : terkep[i, j];
                     talaj.Source = GetImageSource(jel);
-                    Canvas.SetLeft(talaj, j * 40);
-                    Canvas.SetTop(talaj, i * 40);
+                    Canvas.SetLeft(talaj, j * 80);
+                    Canvas.SetTop(talaj, i * 80);
                     jatekter.Children.Add(talaj);
                 }
             }
             //rover rajzolás
             roverKep = new Image()
             {
-                Width = 40,
-                Height = 40,
+                Width = 80,
+                Height = 80,
                 Source = new BitmapImage(new Uri("pack://application:,,,/Images/rover.png")),
             };
             //A rover képe mindig a legfelső rétegben legyen
@@ -63,8 +67,8 @@ namespace PSZK_MarsRoverProject
         /// </summary>
         private void FrissitRoverPozicio()
         {
-            Canvas.SetLeft(roverKep, rover.Xposition * 40);
-            Canvas.SetTop(roverKep, rover.Yposition * 40);
+            Canvas.SetLeft(roverKep, rover.Xposition * 80);
+            Canvas.SetTop(roverKep, rover.Yposition * 80);
             txtPos.Text = $"X: {rover.Xposition}, Y: {rover.Yposition}";
         }
 
@@ -93,8 +97,8 @@ namespace PSZK_MarsRoverProject
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            double roverX = 34 * 40;
-            double roverY = 32 * 40;
+            double roverX = 34 * 80;
+            double roverY = 32 * 80;
             double centerX = roverX - (kamera.ActualWidth / 2);
             double centerY = roverY - (kamera.ActualHeight / 2);
             kamera.ScrollToHorizontalOffset(centerX);
@@ -105,20 +109,20 @@ namespace PSZK_MarsRoverProject
             switch (e.Key)
             {
                 case Key.W:
-                    kamera.ScrollToVerticalOffset(kamera.VerticalOffset - 40);
+                    kamera.ScrollToVerticalOffset(kamera.VerticalOffset - 80);
                     break;
                 case Key.S:
-                    kamera.ScrollToVerticalOffset(kamera.VerticalOffset + 40);
+                    kamera.ScrollToVerticalOffset(kamera.VerticalOffset + 80);
                     break;
                 case Key.A:
-                    kamera.ScrollToHorizontalOffset(kamera.HorizontalOffset - 40);
+                    kamera.ScrollToHorizontalOffset(kamera.HorizontalOffset - 80);
                     break;
                 case Key.D:
-                    kamera.ScrollToHorizontalOffset(kamera.HorizontalOffset + 40);
+                    kamera.ScrollToHorizontalOffset(kamera.HorizontalOffset + 80);
                     break;
                 case Key.Space:
-                    kamera.ScrollToVerticalOffset(rover.Yposition * 40 - (kamera.ActualHeight / 2));
-                    kamera.ScrollToHorizontalOffset(rover.Xposition * 40 - (kamera.ActualWidth / 2));
+                    kamera.ScrollToVerticalOffset(rover.Yposition * 80 - (kamera.ActualHeight / 2));
+                    kamera.ScrollToHorizontalOffset(rover.Xposition * 80 - (kamera.ActualWidth / 2));
                     break;
                 case Key.R:
                     if (rover.Yposition > 0) rover.Yposition--;
