@@ -13,11 +13,15 @@
             <ColumnDefinition Width="*" />
             <ColumnDefinition Width="250" />
         </Grid.ColumnDefinitions>
-        <ScrollViewer Grid.Column="0" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Visible" Background="#1e1e1e" x:Name="kamera">
+        <ScrollViewer Grid.Column="0" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden" Background="#1e1e1e" x:Name="kamera">
             <Canvas x:Name="jatekter" Width="4100" Height="4100">
                 <Canvas.LayoutTransform>
                     <ScaleTransform x:Name="nagyito" ScaleX="1" ScaleY="1" />
                 </Canvas.LayoutTransform>
+                <Canvas.Background>
+                    <ImageBrush  ImageSource="pack://application:,,,/Images/maptalaj.png"
+                    Stretch="UniformToFill" TileMode="Tile" Viewport="0,0,256,256" ViewportUnits="Absolute"/>
+                </Canvas.Background>
             </Canvas>
         </ScrollViewer>
 
@@ -34,6 +38,6 @@
                 <TextBlock Text="Energia:" Foreground="LightGray" FontSize="14"/>
                 <ProgressBar Value="100" Height="20" Foreground="Green" Margin="0,5,0,20"/>
             </StackPanel>
-        </Border>
+        </Border>   
     </Grid>
 </Window>

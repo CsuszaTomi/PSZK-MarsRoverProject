@@ -28,7 +28,7 @@ namespace PSZK_MarsRoverProject
         public MainWindow()
         {
             InitializeComponent();
-            groundImage = new BitmapImage(new Uri("pack://application:,,,/Images/ground.png"));
+            groundImage = new BitmapImage();//new Uri("pack://application:,,,/Images/ground.png"));
             obstacleImage = new BitmapImage(new Uri("pack://application:,,,/Images/obstacle2.png"));
             CsvBeolvaso();
             //terkep[32, 34] = "R";
