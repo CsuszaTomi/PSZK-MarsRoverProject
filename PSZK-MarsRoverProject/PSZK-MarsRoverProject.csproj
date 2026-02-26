@@ -11,6 +11,7 @@
 
   <ItemGroup>
     <None Remove="Images\ground.png" />
+    <None Remove="Images\kep3.png" />
     <None Remove="Images\obstacle.png" />
     <None Remove="Images\obstacle2.png" />
     <None Remove="Images\obstacletroli.png" />
@@ -18,7 +19,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="Images\gem.png" />
     <Resource Include="Images\ground.png" />
+    <Resource Include="Images\kep3.png" />
     <Resource Include="Images\maptalaj.png" />
     <Resource Include="Images\obstacle.png" />
     <Resource Include="Images\obstacle2.png" />

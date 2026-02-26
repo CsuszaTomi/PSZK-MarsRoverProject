@@ -24,12 +24,15 @@ namespace PSZK_MarsRoverProject
         Image roverKep;
         private BitmapImage groundImage;
         private BitmapImage obstacleImage;
+        private BitmapImage gemimage;
         private bool FollowRover;
+        const int tileMeret = 80;
         public MainWindow()
         {
             InitializeComponent();
-            groundImage = new BitmapImage();//new Uri("pack://application:,,,/Images/ground.png"));
+            groundImage = new BitmapImage(new Uri("pack://application:,,,/Images/kep3.png"));
             obstacleImage = new BitmapImage(new Uri("pack://application:,,,/Images/obstacle2.png"));
+            gemimage = new BitmapImage(new Uri("pack://application:,,,/Images/gem.png"));
             CsvBeolvaso();
             //terkep[32, 34] = "R";
             JatekterFeltoltes();
@@ -44,21 +47,21 @@ namespace PSZK_MarsRoverProject
                 {
                     Image talaj = new Image() 
                     { 
-                        Width = 80, 
-                        Height = 80 
+                        Width = tileMeret, 
+                        Height = tileMeret
                     };
                     string jel = terkep[i, j] == "R" ? "." : terkep[i, j];
                     talaj.Source = GetImageSource(jel);
-                    Canvas.SetLeft(talaj, j * 80);
-                    Canvas.SetTop(talaj, i * 80);
+                    Canvas.SetLeft(talaj, j * tileMeret);
+                    Canvas.SetTop(talaj, i * tileMeret);
                     jatekter.Children.Add(talaj);
                 }
             }
             //rover rajzolás
             roverKep = new Image()
             {
-                Width = 80,
-                Height = 80,
+                Width = tileMeret,
+                Height = tileMeret,
                 Source = new BitmapImage(new Uri("pack://application:,,,/Images/rover.png")),
             };
             //A rover képe mindig a legfelső rétegben legyen
@@ -72,13 +75,13 @@ namespace PSZK_MarsRoverProject
         /// </summary>
         private void FrissitRoverPozicio()
         {
-            Canvas.SetLeft(roverKep, rover.Xposition * 80);
-            Canvas.SetTop(roverKep, rover.Yposition * 80);
+            Canvas.SetLeft(roverKep, rover.Xposition * tileMeret);
+            Canvas.SetTop(roverKep, rover.Yposition * tileMeret);
             txtPos.Text = $"X: {rover.Xposition}, Y: {rover.Yposition}";
             if (FollowRoverBox.IsChecked == true)
             {
-                kamera.ScrollToVerticalOffset(rover.Yposition * 80 - (kamera.ActualHeight / 2));
-                kamera.ScrollToHorizontalOffset(rover.Xposition * 80 - (kamera.ActualWidth / 2));
+                kamera.ScrollToVerticalOffset(rover.Yposition * tileMeret - (kamera.ActualHeight / 2));
+                kamera.ScrollToHorizontalOffset(rover.Xposition * tileMeret - (kamera.ActualWidth / 2));
             }
         }
 
@@ -95,20 +98,21 @@ namespace PSZK_MarsRoverProject
                     return groundImage;
                 case "#":
                     return obstacleImage;
+                case "G":
+                    return gemimage;
+                case "Y":
+                    return gemimage;
                 default:
                     return groundImage;
             }
         }
 
+
+
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            kamera.ScrollToVerticalOffset(rover.Yposition * 80 - (kamera.ActualHeight / 2));
-            kamera.ScrollToHorizontalOffset(rover.Xposition * 80 - (kamera.ActualWidth / 2));
-        }
-
-        private void PreviewMouseHorizontalWheel(object sender, RoutedEventArgs e)
-        {
-
+            kamera.ScrollToVerticalOffset(rover.Yposition * tileMeret - (kamera.ActualHeight / 2));
+            kamera.ScrollToHorizontalOffset(rover.Xposition * tileMeret - (kamera.ActualWidth / 2));
         }
 
         private void Window_KeyDown(object sender, KeyEventArgs e)
@@ -116,20 +120,20 @@ namespace PSZK_MarsRoverProject
             switch (e.Key)
             {
                 case Key.W:
-                    kamera.ScrollToVerticalOffset(kamera.VerticalOffset - 80);
+                    kamera.ScrollToVerticalOffset(kamera.VerticalOffset - tileMeret);
                     break;
                 case Key.S:
-                    kamera.ScrollToVerticalOffset(kamera.VerticalOffset + 80);
+                    kamera.ScrollToVerticalOffset(kamera.VerticalOffset + tileMeret);
                     break;
                 case Key.A:
-                    kamera.ScrollToHorizontalOffset(kamera.HorizontalOffset - 80);
+                    kamera.ScrollToHorizontalOffset(kamera.HorizontalOffset - tileMeret);
                     break;
                 case Key.D:
-                    kamera.ScrollToHorizontalOffset(kamera.HorizontalOffset + 80);
+                    kamera.ScrollToHorizontalOffset(kamera.HorizontalOffset + tileMeret);
                     break;
                 case Key.Space:
-                    kamera.ScrollToVerticalOffset(rover.Yposition * 80 - (kamera.ActualHeight / 2));
-                    kamera.ScrollToHorizontalOffset(rover.Xposition * 80 - (kamera.ActualWidth / 2));
+                    kamera.ScrollToVerticalOffset(rover.Yposition * tileMeret - (kamera.ActualHeight / 2));
+                    kamera.ScrollToHorizontalOffset(rover.Xposition * tileMeret - (kamera.ActualWidth / 2));
                     break;
                 case Key.R:
                     if (rover.Yposition > 0) rover.Yposition--;

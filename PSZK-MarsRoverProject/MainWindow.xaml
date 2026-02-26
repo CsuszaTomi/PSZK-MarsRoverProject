@@ -14,14 +14,7 @@
             <ColumnDefinition Width="250" />
         </Grid.ColumnDefinitions>
         <ScrollViewer Grid.Column="0" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden" Background="#1e1e1e" x:Name="kamera">
-            <Canvas x:Name="jatekter" Width="4100" Height="4100">
-                <Canvas.LayoutTransform>
-                    <ScaleTransform x:Name="nagyito" ScaleX="1" ScaleY="1" />
-                </Canvas.LayoutTransform>
-                <Canvas.Background>
-                    <ImageBrush  ImageSource="pack://application:,,,/Images/maptalaj.png"
-                    Stretch="UniformToFill" TileMode="Tile" Viewport="0,0,256,256" ViewportUnits="Absolute"/>
-                </Canvas.Background>
+            <Canvas x:Name="jatekter" Width="4000" Height="4000">
             </Canvas>
         </ScrollViewer>
 
@@ -33,6 +26,8 @@
 
                 <TextBlock Text="Pozíció:" Foreground="LightGray" FontSize="14"/>
                 <TextBlock x:Name="txtPos" Text="X: 0, Y: 0" Foreground="White" FontSize="16" Margin="0,0,0,10"/>
+                <TextBlock Text="Cél kordináta:" Foreground="LightGray" FontSize="14"/>
+                <TextBlock x:Name="celPozicio" Text="X: 0, Y: 0" Foreground="White" FontSize="16" Margin="0,0,0,10"/>
                 <CheckBox x:Name="FollowRoverBox" IsChecked="False" Foreground="White" FontFamily="Arial" FontWeight="Bold">Rover Követése</CheckBox>
 
                 <TextBlock Text="Energia:" Foreground="LightGray" FontSize="14"/>
