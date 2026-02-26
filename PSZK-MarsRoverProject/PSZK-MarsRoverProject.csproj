@@ -31,6 +31,7 @@
     <None Remove="Images\kep35.png" />
     <None Remove="Images\kep36.png" />
     <None Remove="Images\kep37.png" />
+    <None Remove="Images\kicsikocsi.png" />
     <None Remove="Images\obstacle2.png" />
     <None Remove="Images\obstacletroli.png" />
     <None Remove="Images\rover.png" />
@@ -62,6 +63,7 @@
     <Resource Include="Images\kep35.png" />
     <Resource Include="Images\kep36.png" />
     <Resource Include="Images\kep37.png" />
+    <Resource Include="Images\kicsikocsi.png" />
     <Resource Include="Images\obstacle2.png" />
     <Resource Include="Images\obstacletroli.png">
       <CopyToOutputDirectory></CopyToOutputDirectory>
