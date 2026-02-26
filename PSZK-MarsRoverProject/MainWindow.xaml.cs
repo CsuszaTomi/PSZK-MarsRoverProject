@@ -23,7 +23,13 @@ namespace PSZK_MarsRoverProject
         string[,] terkep = new string[50, 50];
         Rover rover = new Rover() { Xposition = 32, Yposition = 34, BatteryLevel = 100, IsCharging = true };
         Image roverKep;
-        private BitmapImage groundImage;
+        private BitmapImage groundImage1;
+        private BitmapImage groundImage2;
+        private BitmapImage groundImage3;
+        private BitmapImage groundImage4;
+        private BitmapImage groundImage5;
+        private BitmapImage groundImage6;
+        private BitmapImage groundImage7;
         private BitmapImage obstacleImage;
         private BitmapImage gemimage;
         private bool FollowRover;
@@ -31,7 +37,13 @@ namespace PSZK_MarsRoverProject
         public MainWindow()
         {
             InitializeComponent();
-            groundImage = new BitmapImage(new Uri("pack://application:,,,/Images/kep11.png"));
+            groundImage1 = new BitmapImage(new Uri("pack://application:,,,/Images/kep31.png"));
+            groundImage2 = new BitmapImage(new Uri("pack://application:,,,/Images/kep32.png"));
+            groundImage3 = new BitmapImage(new Uri("pack://application:,,,/Images/kep33.png"));
+            groundImage4 = new BitmapImage(new Uri("pack://application:,,,/Images/kep34.png"));
+            groundImage5 = new BitmapImage(new Uri("pack://application:,,,/Images/kep35.png"));
+            groundImage6 = new BitmapImage(new Uri("pack://application:,,,/Images/kep36.png"));
+            groundImage7 = new BitmapImage(new Uri("pack://application:,,,/Images/kep37.png"));
             obstacleImage = new BitmapImage(new Uri("pack://application:,,,/Images/obstacle2.png"));
             gemimage = new BitmapImage(new Uri("pack://application:,,,/Images/gem.png"));
             CsvBeolvaso();
@@ -97,7 +109,15 @@ namespace PSZK_MarsRoverProject
             switch (karakter)
             {
                 case ".":
-                    return groundImage;
+                    Random rnd = new Random();
+                    int szam = rnd.Next(1, 8); // 1-től 7-ig
+                    if (szam == 1) return groundImage1;
+                    if (szam == 2) return groundImage2;
+                    if (szam == 3) return groundImage3;
+                    if (szam == 4) return groundImage4;
+                    if (szam == 5) return groundImage5;
+                    if (szam == 6) return groundImage6;
+                    return groundImage7;
                 case "#":
                     return obstacleImage;
                 case "G":
@@ -107,7 +127,7 @@ namespace PSZK_MarsRoverProject
                 case "B":
                     return gemimage;
                 default:
-                    return groundImage;
+                    return groundImage1;
             }
         }
 
