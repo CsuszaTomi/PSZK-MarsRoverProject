@@ -10,7 +10,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Images\ground.png" />
     <None Remove="Images\kep11.png" />
     <None Remove="Images\kep12.png" />
     <None Remove="Images\kep13.png" />
@@ -18,8 +17,6 @@
     <None Remove="Images\kep15.png" />
     <None Remove="Images\kep16.png" />
     <None Remove="Images\kep17.png" />
-    <None Remove="Images\kep3.png" />
-    <None Remove="Images\obstacle.png" />
     <None Remove="Images\obstacle2.png" />
     <None Remove="Images\obstacletroli.png" />
     <None Remove="Images\rover.png" />
@@ -27,7 +24,6 @@
 
   <ItemGroup>
     <Resource Include="Images\gem.png" />
-    <Resource Include="Images\ground.png" />
     <Resource Include="Images\kep11.png" />
     <Resource Include="Images\kep12.png" />
     <Resource Include="Images\kep13.png" />
@@ -35,9 +31,6 @@
     <Resource Include="Images\kep15.png" />
     <Resource Include="Images\kep16.png" />
     <Resource Include="Images\kep17.png" />
-    <Resource Include="Images\kep3.png" />
-    <Resource Include="Images\maptalaj.png" />
-    <Resource Include="Images\obstacle.png" />
     <Resource Include="Images\obstacle2.png" />
     <Resource Include="Images\obstacletroli.png">
       <CopyToOutputDirectory></CopyToOutputDirectory>
