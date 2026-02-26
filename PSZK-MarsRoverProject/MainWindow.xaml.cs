@@ -31,7 +31,7 @@ namespace PSZK_MarsRoverProject
         public MainWindow()
         {
             InitializeComponent();
-            groundImage = new BitmapImage(new Uri("pack://application:,,,/Images/kep3.png"));
+            groundImage = new BitmapImage(new Uri("pack://application:,,,/Images/kep11.png"));
             obstacleImage = new BitmapImage(new Uri("pack://application:,,,/Images/obstacle2.png"));
             gemimage = new BitmapImage(new Uri("pack://application:,,,/Images/gem.png"));
             CsvBeolvaso();
@@ -49,7 +49,8 @@ namespace PSZK_MarsRoverProject
                     Image talaj = new Image() 
                     { 
                         Width = tileMeret, 
-                        Height = tileMeret
+                        Height = tileMeret,
+                        SnapsToDevicePixels = true
                     };
                     string jel = terkep[i, j] == "R" ? "." : terkep[i, j];
                     talaj.Source = GetImageSource(jel);
