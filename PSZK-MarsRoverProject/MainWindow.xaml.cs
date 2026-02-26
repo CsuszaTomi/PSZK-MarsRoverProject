@@ -21,9 +21,11 @@ namespace PSZK_MarsRoverProject
     public partial class MainWindow : Window
     {
         string[,] terkep = new string[50, 50];
+        Image[,] gemKepek = new Image[50, 50];
         Rover rover = new Rover() { Xposition = 32, Yposition = 34, BatteryLevel = 100, IsCharging = true };
         Image roverKep;
         private BitmapImage groundImage;
+
         private BitmapImage obstacleImage;
         private BitmapImage gemimage;
         private bool FollowRover;
@@ -41,22 +43,42 @@ namespace PSZK_MarsRoverProject
 
         private void JatekterFeltoltes()
         {
-            //tile rajzolás
             for (int i = 0; i < terkep.GetLength(0); i++)
             {
                 for (int j = 0; j < terkep.GetLength(1); j++)
                 {
-                    Image talaj = new Image() 
-                    { 
-                        Width = tileMeret, 
+                    //tile rajzolas
+                    Image talaj = new Image()
+                    {
+                        Width = tileMeret,
                         Height = tileMeret,
+                        Source = groundImage,
                         SnapsToDevicePixels = true
                     };
-                    string jel = terkep[i, j] == "R" ? "." : terkep[i, j];
-                    talaj.Source = GetImageSource(jel);
                     Canvas.SetLeft(talaj, j * tileMeret);
                     Canvas.SetTop(talaj, i * tileMeret);
+                    Panel.SetZIndex(talaj, 0); //legalso reteg
                     jatekter.Children.Add(talaj);
+                    string jel = terkep[i, j];
+                    if (jel != "." && jel != "R")
+                    {
+                        Image targy = new Image()
+                        {
+                            Width = tileMeret,
+                            Height = tileMeret,
+                            Source = GetImageSource(jel),
+                            SnapsToDevicePixels = true
+                        };
+                        Canvas.SetLeft(targy, j * tileMeret);
+                        Canvas.SetTop(targy, i * tileMeret);
+                        Panel.SetZIndex(targy, 1); // A talaj felett legyen
+                        jatekter.Children.Add(targy);
+                        // Ha ez egy gem (G, Y, B), elmentjük a referenciáját
+                        if (jel == "G" || jel == "Y" || jel == "B")
+                        {
+                            gemKepek[i, j] = targy;
+                        }
+                    }
                 }
             }
             //rover rajzolás
@@ -64,7 +86,7 @@ namespace PSZK_MarsRoverProject
             {
                 Width = tileMeret,
                 Height = tileMeret,
-                Source = new BitmapImage(new Uri("pack://application:,,,/Images/rover.png")),
+                Source = new BitmapImage(new Uri("pack://application:,,,/Images/kicsikocsi.png")),
             };
             //A rover képe mindig a legfelső rétegben legyen
             Panel.SetZIndex(roverKep, 10);
@@ -152,9 +174,16 @@ namespace PSZK_MarsRoverProject
                     if (rover.Xposition > 0) rover.Xposition++;
                     break;
                 case Key.Q:
-                    terkep[rover.Yposition, rover.Xposition] = ".";
-                    jatekter.Children.Clear();
-                    JatekterFeltoltes();
+                    string aktualisCella = terkep[rover.Yposition, rover.Xposition];
+                    if (aktualisCella == "G" || aktualisCella == "Y" || aktualisCella == "B")
+                    {
+                        terkep[rover.Yposition, rover.Xposition] = ".";
+                        if (gemKepek[rover.Yposition, rover.Xposition] != null)
+                        {
+                            jatekter.Children.Remove(gemKepek[rover.Yposition, rover.Xposition]);
+                            gemKepek[rover.Yposition, rover.Xposition] = null;
+                        }
+                    }
                     break;
                 case Key.E:
                     int[] celKordinata = RoverAI.LegkozelebbiGemKereses(terkep,rover);

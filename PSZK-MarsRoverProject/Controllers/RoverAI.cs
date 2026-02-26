@@ -10,53 +10,74 @@ namespace PSZK_MarsRoverProject.Controllers
     internal class RoverAI
     {
         /// <summary>
-        /// Szélességi keresés (BFS) algoritmus segítségével meghatározza a legközelebbi 
-        /// gyűjthető érc (Gem: "G", "Y", "B") koordinátáit a megadott térképen.
-        /// Az algoritmus figyelembe veszi az akadályokat ("#"), és garantáltan 
-        /// a legkevesebb lépésben elérhető célpontot adja vissza.
+        /// A* algoritmus alapú útvonaltervező, amely meghatározza a legközelebbi 
+        /// gyűjthető ásvány (Kék: "B", Sárga: "Y", Zöld: "G") koordinátáit.
+        /// Az algoritmus támogatja a 8 irányú mozgást (átlós is) és prioritási sort 
+        /// használ a költségek (távolság/energia) optimalizálása érdekében.
         /// </summary>
-        /// <param name="terkep">A 2D-s rács, amely a pálya elemeit tartalmazza.</param>
-        /// <param name="rover">A Rover objektum, amely tartalmazza az aktuális pozíciót.</param>
-        /// <returns>A legközelebbi érc [x, y] koordinátái, vagy null, ha nincs elérhető érc a pályán.</returns>
+        /// <param name="terkep">Az 50x50-es marsi felszínt reprezentáló 2D tömb.</param>
+        /// <param name="rover">A rover aktuális pozícióját és állapotát tároló objektum.</param>
+        /// <returns>A legközelebbi ásvány [sor, oszlop] koordinátái, vagy null, ha nincs elérhető célpont.</returns>
         static public int[] LegkozelebbiGemKereses(string[,] terkep, Rover rover)
         {
-            int[] celKordinata;
-            // Breadth-First Search (BFS) algoritmus a legközelebbi gem keresésére
-            Queue<int[]> q = new Queue<int[]>();
-            bool[,] visited = new bool[terkep.GetLength(0), terkep.GetLength(1)];
+            int sor = terkep.GetLength(0);
+            int oszlop = terkep.GetLength(1);
+            PriorityQueue<Node, double> q = new PriorityQueue<Node, double>();
+            //megjegyzes, koltseg megyjegyzes
+            double[,] eddigiKoltseg = new double[sor, oszlop];
+            for (int i = 0; i < sor; i++)
+            {
+                for (int j = 0; j < oszlop; j++)
+                {
+                    eddigiKoltseg[i, j] = double.MaxValue;
+                }
+            }
             int startX = rover.Yposition;
             int startY = rover.Xposition;
-            visited[startX, startY] = true;
-            // kezdő pozíció hozzáadása a sorhoz
-            q.Enqueue(new int[] { startX, startY });
+            //Kiinduló pont hozzáadása a prioritási sorhoz
+            Node startNode = new Node(startX, startY, 0, 0);
+            q.Enqueue(startNode, startNode.F);
+            eddigiKoltseg[startX, startY] = 0;
+            //8 irany: fel, le, balra, jobbra + 4 diagonal
+            int[,] directions = new int[,] {
+                { -1, 0 }, { 1, 0 }, { 0, -1 }, { 0, 1 },   // Merőleges
+                { -1, -1 }, { -1, 1 }, { 1, -1 }, { 1, 1 }  // Átlós
+                };
             while (q.Count > 0)
             {
-                // aktuális pozíció lekérése a sorból
-                int[] curr = q.Dequeue();
-                int x = curr[0];
-                int y = curr[1];
-                // ha gemet találunk, visszatérünk a koordinátákkal
-                if (terkep[x, y] == "G" || terkep[x,y] == "Y" || terkep[x,y] == "B")
+                Node curr = q.Dequeue();
+                //Cel ellenorzese
+                if (terkep[curr.X, curr.Y] == "G" || terkep[curr.X, curr.Y] == "Y" || terkep[curr.X, curr.Y] == "B")
                 {
-                    return new int[] { x, y };
+                    return new int[] { curr.X, curr.Y };
                 }
-                // szomszédok bejárása
-                int[,] directions = new int[,] { { -1, 0 }, { 1, 0 }, { 0, -1 }, { 0, 1 } };
+                //szomszedok vizsgalata
                 for (int i = 0; i < directions.GetLength(0); i++)
                 {
-                    // új pozíció kiszámítása
-                    int newX = x + directions[i, 0];
-                    int newY = y + directions[i, 1];
-                    // új pozíció érvényességének ellenőrzése és hozzáadása a sorhoz, ha még nem látogattuk meg és nem akadály
-                    if (newX >= 0 && newX < terkep.GetLength(0) && newY >= 0 && newY < terkep.GetLength(1) && !visited[newX, newY] && terkep[newX, newY] != "#")
+                    int szomszedX = curr.X + directions[i, 0];
+                    int szomszedY = curr.Y + directions[i, 1];
+                    if (szomszedX >= 0 && szomszedX < sor && szomszedY >= 0 && szomszedY < oszlop && terkep[szomszedX, szomszedY] != "#")
                     {
-                        // új pozíció megjelölése látogatottként és hozzáadása a sorhoz
-                        visited[newX, newY] = true;
-                        q.Enqueue(new int[] { newX, newY });
+                        // KÖLTSÉG SZÁMÍTÁSA: 
+                        // Itt jön az AI! Az átlós mozgás távolsága valójában 1.41 (gyök 2), 
+                        // de a feladat szerint minden blokk 1 lépés.
+                        // Itt behozhatod az energiafogyasztást is súlyként!
+                        double koltseg = 1.0;
+                        double ujG = curr.G + koltseg;
+                        if (ujG < eddigiKoltseg[szomszedX, szomszedY])
+                        {
+                            eddigiKoltseg[szomszedX, szomszedY] = ujG;
+
+                            // Heurisztika (H): Mivel nem tudjuk melyik a legközelebbi gem, 
+                            // a keresésnél a H értéke 0.
+                            // Ha lenne fix célpontod, ide a távolságot írnánk.
+                            Node szomszed = new Node(szomszedX, szomszedY, ujG, 0);
+                            q.Enqueue(szomszed, szomszed.F);
+                        }
                     }
                 }
             }
-            return null; // ha nem találunk gemet, visszatérünk null-lal
+            return null;
         }
     }
 }
