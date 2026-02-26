@@ -22,9 +22,14 @@ namespace PSZK_MarsRoverProject
         string[,] terkep = new string[50, 50];
         Rover rover = new Rover() { Xposition = 32, Yposition = 34, BatteryLevel = 100, IsCharging = true };
         Image roverKep;
+        private BitmapImage groundImage;
+        private BitmapImage obstacleImage;
+        private bool FollowRover;
         public MainWindow()
         {
             InitializeComponent();
+            groundImage = new BitmapImage(new Uri("pack://application:,,,/Images/ground.png"));
+            obstacleImage = new BitmapImage(new Uri("pack://application:,,,/Images/obstacle2.png"));
             CsvBeolvaso();
             //terkep[32, 34] = "R";
             JatekterFeltoltes();
@@ -70,6 +75,11 @@ namespace PSZK_MarsRoverProject
             Canvas.SetLeft(roverKep, rover.Xposition * 80);
             Canvas.SetTop(roverKep, rover.Yposition * 80);
             txtPos.Text = $"X: {rover.Xposition}, Y: {rover.Yposition}";
+            if (FollowRoverBox.IsChecked == true)
+            {
+                kamera.ScrollToVerticalOffset(rover.Yposition * 80 - (kamera.ActualHeight / 2));
+                kamera.ScrollToHorizontalOffset(rover.Xposition * 80 - (kamera.ActualWidth / 2));
+            }
         }
 
         /// <summary>
@@ -79,31 +89,28 @@ namespace PSZK_MarsRoverProject
         /// <returns>A megfelelő ImageSource</returns>
         private ImageSource GetImageSource(string karakter)
         {
-            string utvonal = "";
             switch (karakter)
             {
                 case ".":
-                    utvonal = "ground.png";
-                    break;
+                    return groundImage;
                 case "#":
-                    utvonal = "obstacle.png";
-                    break;
+                    return obstacleImage;
                 default:
-                    utvonal = "ground.png";
-                    break;
+                    return groundImage;
             }
-            return new BitmapImage(new Uri($"pack://application:,,,/Images/{utvonal}"));
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            double roverX = 34 * 80;
-            double roverY = 32 * 80;
-            double centerX = roverX - (kamera.ActualWidth / 2);
-            double centerY = roverY - (kamera.ActualHeight / 2);
-            kamera.ScrollToHorizontalOffset(centerX);
-            kamera.ScrollToVerticalOffset(centerY);
+            kamera.ScrollToVerticalOffset(rover.Yposition * 80 - (kamera.ActualHeight / 2));
+            kamera.ScrollToHorizontalOffset(rover.Xposition * 80 - (kamera.ActualWidth / 2));
         }
+
+        private void PreviewMouseHorizontalWheel(object sender, RoutedEventArgs e)
+        {
+
+        }
+
         private void Window_KeyDown(object sender, KeyEventArgs e)
         {
             switch (e.Key)
