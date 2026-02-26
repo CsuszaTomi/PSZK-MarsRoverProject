@@ -1,4 +1,5 @@
-﻿using PSZK_MarsRoverProject.Models;
+﻿using PSZK_MarsRoverProject.Controllers;
+using PSZK_MarsRoverProject.Models;
 using System.IO;
 using System.Text;
 using System.Windows;
@@ -102,6 +103,8 @@ namespace PSZK_MarsRoverProject
                     return gemimage;
                 case "Y":
                     return gemimage;
+                case "B":
+                    return gemimage;
                 default:
                     return groundImage;
             }
@@ -140,6 +143,21 @@ namespace PSZK_MarsRoverProject
                     break;
                 case Key.T:
                     if (rover.Yposition < 49) rover.Yposition++;
+                    break;
+                case Key.Z:
+                    if (rover.Xposition < 49) rover.Xposition--;
+                    break;
+                case Key.U:
+                    if (rover.Xposition > 0) rover.Xposition++;
+                    break;
+                case Key.Q:
+                    terkep[rover.Yposition, rover.Xposition] = ".";
+                    jatekter.Children.Clear();
+                    JatekterFeltoltes();
+                    break;
+                case Key.E:
+                    int[] celKordinata = RoverAI.LegkozelebbiGemKereses(terkep,rover);
+                    celPozicio.Text = $"X: {celKordinata[1]}, Y: {celKordinata[0]}";
                     break;
             }
             FrissitRoverPozicio();
