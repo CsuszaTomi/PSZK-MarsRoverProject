@@ -31,6 +31,8 @@ namespace PSZK_MarsRoverProject
         private BitmapImage groundImage5;
         private BitmapImage groundImage6;
         private BitmapImage groundImage7;
+        private BitmapImage groundImage8;
+        private BitmapImage groundImage9;
         private BitmapImage obstacleImage;
         private BitmapImage gemimage;
         private bool FollowRover;
@@ -38,13 +40,15 @@ namespace PSZK_MarsRoverProject
         public MainWindow()
         {
             InitializeComponent();
-            groundImage1 = new BitmapImage(new Uri("pack://application:,,,/Images/kep11.png"));
-            groundImage2 = new BitmapImage(new Uri("pack://application:,,,/Images/kep12.png"));
-            groundImage3 = new BitmapImage(new Uri("pack://application:,,,/Images/kep13.png"));
-            groundImage4 = new BitmapImage(new Uri("pack://application:,,,/Images/kep14.png"));
-            groundImage5 = new BitmapImage(new Uri("pack://application:,,,/Images/kep15.png"));
-            groundImage6 = new BitmapImage(new Uri("pack://application:,,,/Images/kep16.png"));
-            groundImage7 = new BitmapImage(new Uri("pack://application:,,,/Images/kep17.png"));
+            groundImage1 = new BitmapImage(new Uri("pack://application:,,,/Images/kep51.png"));
+            groundImage2 = new BitmapImage(new Uri("pack://application:,,,/Images/kep52.png"));
+            groundImage3 = new BitmapImage(new Uri("pack://application:,,,/Images/kep53.png"));
+            groundImage4 = new BitmapImage(new Uri("pack://application:,,,/Images/kep54.png"));
+            groundImage5 = new BitmapImage(new Uri("pack://application:,,,/Images/kep55.png"));
+            groundImage6 = new BitmapImage(new Uri("pack://application:,,,/Images/kep56.png"));
+            groundImage7 = new BitmapImage(new Uri("pack://application:,,,/Images/kep57.png"));
+            groundImage8 = new BitmapImage(new Uri("pack://application:,,,/Images/kep58.png"));
+            groundImage9 = new BitmapImage(new Uri("pack://application:,,,/Images/kep59.png"));
             obstacleImage = new BitmapImage(new Uri("pack://application:,,,/Images/obstacle2.png"));
             gemimage = new BitmapImage(new Uri("pack://application:,,,/Images/gem.png"));
             CsvBeolvaso();
@@ -149,14 +153,16 @@ namespace PSZK_MarsRoverProject
         private ImageSource GetGroundImageSource()
         {
                 Random rnd = new Random();
-                int szam = rnd.Next(1, 8); // 1-től 7-ig
+                int szam = rnd.Next(1, 10); // 1-től 7-ig
                 if (szam == 1) return groundImage1;
                 if (szam == 2) return groundImage2;
                 if (szam == 3) return groundImage3;
                 if (szam == 4) return groundImage4;
                 if (szam == 5) return groundImage5;
                 if (szam == 6) return groundImage6;
-                return groundImage7;
+                if (szam == 7) return groundImage7;
+                if (szam == 8) return groundImage8;
+            return groundImage9;
             }
 
 
