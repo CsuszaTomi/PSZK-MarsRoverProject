@@ -159,8 +159,6 @@ namespace PSZK_MarsRoverProject
                 return groundImage7;
             }
 
-
-
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             kamera.ScrollToVerticalOffset(rover.Yposition * tileMeret - (kamera.ActualHeight / 2));

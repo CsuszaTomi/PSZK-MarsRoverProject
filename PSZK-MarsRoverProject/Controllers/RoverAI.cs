@@ -59,15 +59,13 @@ namespace PSZK_MarsRoverProject.Controllers
                     if (szomszedX >= 0 && szomszedX < sor && szomszedY >= 0 && szomszedY < oszlop && terkep[szomszedX, szomszedY] != "#")
                     {
                         // KÖLTSÉG SZÁMÍTÁSA: 
-                        // Itt jön az AI! Az átlós mozgás távolsága valójában 1.41 (gyök 2), 
-                        // de a feladat szerint minden blokk 1 lépés.
-                        // Itt behozhatod az energiafogyasztást is súlyként!
+                        // minden blokk 1 lépés.
+                        // később energiafogyasztas
                         double koltseg = 1.0;
                         double ujG = curr.G + koltseg;
                         if (ujG < eddigiKoltseg[szomszedX, szomszedY])
                         {
                             eddigiKoltseg[szomszedX, szomszedY] = ujG;
-
                             // Heurisztika (H): Mivel nem tudjuk melyik a legközelebbi gem, 
                             // a keresésnél a H értéke 0.
                             // Ha lenne fix célpontod, ide a távolságot írnánk.
