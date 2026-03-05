@@ -59,6 +59,12 @@
     <None Remove="Images\obstacle2.png" />
     <None Remove="Images\obstacletroli.png" />
     <None Remove="Images\rover.png" />
+    <None Remove="Images\speed up icon 1x.png" />
+    <None Remove="Images\speed up icon 2x.png" />
+    <None Remove="Images\speed up icon_3x.png" />
+    <None Remove="Images\speedupicon1x.png" />
+    <None Remove="Images\speedupicon2x.png" />
+    <None Remove="Images\speedupicon3x.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -117,6 +123,9 @@
       <CopyToOutputDirectory></CopyToOutputDirectory>
     </Resource>
     <Resource Include="Images\rover.png" />
+    <Resource Include="Images\speedupicon1x.png" />
+    <Resource Include="Images\speedupicon2x.png" />
+    <Resource Include="Images\speedupicon3x.png" />
   </ItemGroup>
 
   <ItemGroup>

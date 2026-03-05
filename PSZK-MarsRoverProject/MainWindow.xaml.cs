@@ -249,5 +249,20 @@ namespace PSZK_MarsRoverProject
                 }
             }
         }
+
+        private void BoostButton3_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void BoostButton2_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void BoostButton1_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 }
