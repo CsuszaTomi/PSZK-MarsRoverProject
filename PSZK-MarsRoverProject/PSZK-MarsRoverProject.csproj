@@ -10,6 +10,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Images\ground1.png" />
+    <None Remove="Images\ground2.png" />
+    <None Remove="Images\ground3.png" />
+    <None Remove="Images\ground4.png" />
+    <None Remove="Images\ground5.png" />
+    <None Remove="Images\ground6.png" />
     <None Remove="Images\kep11.png" />
     <None Remove="Images\kep12.png" />
     <None Remove="Images\kep13.png" />
@@ -56,6 +62,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="Images\ground1.png" />
+    <Resource Include="Images\ground2.png" />
+    <Resource Include="Images\ground3.png" />
+    <Resource Include="Images\ground4.png" />
+    <Resource Include="Images\ground5.png" />
+    <Resource Include="Images\ground6.png" />
     <Resource Include="Images\kep33.png" />
   </ItemGroup>
 

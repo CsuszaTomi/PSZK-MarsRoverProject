@@ -32,9 +32,6 @@ namespace PSZK_MarsRoverProject
         private BitmapImage groundImage4;
         private BitmapImage groundImage5;
         private BitmapImage groundImage6;
-        private BitmapImage groundImage7;
-        private BitmapImage groundImage8;
-        private BitmapImage groundImage9;
         private BitmapImage obstacleImage;
         private BitmapImage gemimage;
         private bool FollowRover;
@@ -44,15 +41,12 @@ namespace PSZK_MarsRoverProject
         {
             InitializeComponent();
             Time.SetTime(8, 0);
-            groundImage1 = new BitmapImage(new Uri("pack://application:,,,/Images/kep51.png"));
-            groundImage2 = new BitmapImage(new Uri("pack://application:,,,/Images/kep52.png"));
-            groundImage3 = new BitmapImage(new Uri("pack://application:,,,/Images/kep53.png"));
-            groundImage4 = new BitmapImage(new Uri("pack://application:,,,/Images/kep54.png"));
-            groundImage5 = new BitmapImage(new Uri("pack://application:,,,/Images/kep55.png"));
-            groundImage6 = new BitmapImage(new Uri("pack://application:,,,/Images/kep56.png"));
-            groundImage7 = new BitmapImage(new Uri("pack://application:,,,/Images/kep57.png"));
-            groundImage8 = new BitmapImage(new Uri("pack://application:,,,/Images/kep58.png"));
-            groundImage9 = new BitmapImage(new Uri("pack://application:,,,/Images/kep59.png"));
+            groundImage1 = new BitmapImage(new Uri("pack://application:,,,/Images/ground1.png"));
+            groundImage2 = new BitmapImage(new Uri("pack://application:,,,/Images/ground2.png"));
+            groundImage3 = new BitmapImage(new Uri("pack://application:,,,/Images/ground3.png"));
+            groundImage4 = new BitmapImage(new Uri("pack://application:,,,/Images/ground4.png"));
+            groundImage5 = new BitmapImage(new Uri("pack://application:,,,/Images/ground5.png"));
+            groundImage6 = new BitmapImage(new Uri("pack://application:,,,/Images/ground6.png"));
             obstacleImage = new BitmapImage(new Uri("pack://application:,,,/Images/obstacle2.png"));
             gemimage = new BitmapImage(new Uri("pack://application:,,,/Images/gem.png"));
             simTimer = new DispatcherTimer();
@@ -175,10 +169,8 @@ namespace PSZK_MarsRoverProject
                 if (szam == 4) return groundImage4;
                 if (szam == 5) return groundImage5;
                 if (szam == 6) return groundImage6;
-                if (szam == 7) return groundImage7;
-                if (szam == 8) return groundImage8;
-            return groundImage9;
-            }
+            else return groundImage1;
+        }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
