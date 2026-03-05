@@ -13,11 +13,14 @@
             <ColumnDefinition Width="*" />
             <ColumnDefinition Width="250" />
         </Grid.ColumnDefinitions>
+
+        <!-- Játékterület -->
         <ScrollViewer Grid.Column="0" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden" Background="#1e1e1e" x:Name="kamera">
             <Canvas x:Name="jatekter" Width="4000" Height="4000">
             </Canvas>
         </ScrollViewer>
 
+        <!-- Dashboard -->
         <Border Grid.Column="1" Background="#2d2d2d" BorderBrush="#444" BorderThickness="2,0,0,0">
             <StackPanel Margin="15">
                 <TextBlock Text="ROVER ÁLLAPOT" Foreground="Orange" FontSize="20" FontWeight="Bold" Margin="0,0,0,20" HorizontalAlignment="Center"/>
@@ -26,13 +29,43 @@
 
                 <TextBlock Text="Pozíció:" Foreground="LightGray" FontSize="14"/>
                 <TextBlock x:Name="txtPos" Text="X: 0, Y: 0" Foreground="White" FontSize="16" Margin="0,0,0,10"/>
-                <TextBlock Text="Cél kordináta:" Foreground="LightGray" FontSize="14"/>
+
+                <TextBlock Text="Cél koordináta:" Foreground="LightGray" FontSize="14"/>
                 <TextBlock x:Name="celPozicio" Text="X: 0, Y: 0" Foreground="White" FontSize="16" Margin="0,0,0,10"/>
-                <CheckBox x:Name="FollowRoverBox" IsChecked="False" Foreground="White" FontFamily="Arial" FontWeight="Bold">Rover Követése</CheckBox>
+
+                <CheckBox x:Name="FollowRoverBox" IsChecked="False" Foreground="White" FontFamily="Arial" FontWeight="Bold" Margin="0,0,0,20">Rover Követése</CheckBox>
 
                 <TextBlock Text="Energia:" Foreground="LightGray" FontSize="14"/>
-                <ProgressBar Value="100" Height="20" Foreground="Green" Margin="0,5,0,20"/>
+                <ProgressBar x:Name="EnergyBar" Value="100" Height="20" Margin="0,5,0,20">
+                    <ProgressBar.Foreground>
+                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                            <GradientStop Color="Green" Offset="0"/>
+                            <GradientStop Color="Yellow" Offset="0.5"/>
+                            <GradientStop Color="Red" Offset="1"/>
+                        </LinearGradientBrush>
+                    </ProgressBar.Foreground>
+                </ProgressBar>
+
+                <!-- Gyorsító gomb -->
+                <StackPanel Orientation="Horizontal" Margin="0,0,0,20" HorizontalAlignment="Center">
+
+                    <!-- Boost 1 kép gomb -->
+                    <Button x:Name="BoostButton1" Click="BoostButton1_Click" BorderThickness="0" Background="Transparent" Margin="0,5">
+                        <Image Source="pack://application:,,,/Images/speedupicon1x.png" Width="50" Height="50"/>
+                    </Button>
+
+                    <!-- Boost 2 kép gomb -->
+                    <Button x:Name="BoostButton2" Click="BoostButton2_Click" BorderThickness="0" Background="Transparent" Margin="0,5">
+                        <Image Source="pack://application:,,,/Images/speedupicon2x.png" Width="50" Height="50"/>
+                    </Button>
+
+                    <!-- Boost 3 kép gomb -->
+                    <Button x:Name="BoostButton3" Click="BoostButton3_Click" BorderThickness="0" Background="Transparent" Margin="0,5">
+                        <Image Source="pack://application:,,,/Images/speedupicon3x.png" Width="50" Height="50"/>
+                    </Button>
+
+                </StackPanel>
             </StackPanel>
-        </Border>   
+        </Border>
     </Grid>
 </Window>
