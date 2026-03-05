@@ -29,7 +29,7 @@ namespace PSZK_MarsRoverProject
         private BitmapImage groundImage1;
         private BitmapImage groundImage2;
         private BitmapImage groundImage3;
-        private BitmapImage groundImage4;
+        //private BitmapImage groundImage4;
         private BitmapImage groundImage5;
         private BitmapImage groundImage6;
         private BitmapImage obstacleImage;
@@ -44,7 +44,7 @@ namespace PSZK_MarsRoverProject
             groundImage1 = new BitmapImage(new Uri("pack://application:,,,/Images/ground1.png"));
             groundImage2 = new BitmapImage(new Uri("pack://application:,,,/Images/ground2.png"));
             groundImage3 = new BitmapImage(new Uri("pack://application:,,,/Images/ground3.png"));
-            groundImage4 = new BitmapImage(new Uri("pack://application:,,,/Images/ground4.png"));
+            //groundImage4 = new BitmapImage(new Uri("pack://application:,,,/Images/ground4.png"));
             groundImage5 = new BitmapImage(new Uri("pack://application:,,,/Images/ground5.png"));
             groundImage6 = new BitmapImage(new Uri("pack://application:,,,/Images/ground6.png"));
             obstacleImage = new BitmapImage(new Uri("pack://application:,,,/Images/obstacle2.png"));
@@ -166,9 +166,9 @@ namespace PSZK_MarsRoverProject
                 if (szam == 1) return groundImage1;
                 if (szam == 2) return groundImage2;
                 if (szam == 3) return groundImage3;
-                if (szam == 4) return groundImage4;
-                if (szam == 5) return groundImage5;
-                if (szam == 6) return groundImage6;
+                //if (szam == 4) return groundImage4;
+                if (szam == 4) return groundImage5;
+                if (szam == 5) return groundImage6;
             else return groundImage1;
         }
 
