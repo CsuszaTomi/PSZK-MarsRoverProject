@@ -10,7 +10,7 @@ namespace PSZK_MarsRoverProject.Models
         public bool IsDay { get; set; } = true;
 
         public TimeSpan TimeSpent { get; set; } = TimeSpan.Zero;
-        public int TimeRate { get; set; } = 1;
+        public double TimeRate { get; set; } = 1;
 
         public void SetTime(int hour, int minute)
         {
