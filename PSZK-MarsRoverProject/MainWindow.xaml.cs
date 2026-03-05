@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Windows.Threading;
 
 namespace PSZK_MarsRoverProject
 {
@@ -20,10 +21,11 @@ namespace PSZK_MarsRoverProject
     /// </summary>
     public partial class MainWindow : Window
     {
-        string[,] terkep = new string[50, 50];
-        Image[,] gemKepek = new Image[50, 50];
+        DispatcherTimer simTimer;
+        string[,] map = new string[50, 50];
+        Image[,] gemImg = new Image[50, 50];
         Rover rover = new Rover() { Xposition = 32, Yposition = 34, BatteryLevel = 100, IsCharging = true };
-        Image roverKep;
+        Image roverImg;
         private BitmapImage groundImage1;
         private BitmapImage groundImage2;
         private BitmapImage groundImage3;
@@ -36,10 +38,12 @@ namespace PSZK_MarsRoverProject
         private BitmapImage obstacleImage;
         private BitmapImage gemimage;
         private bool FollowRover;
-        const int tileMeret = 80;
+        const int tileSize = 80;
+        SimulationTime Time = new SimulationTime();
         public MainWindow()
         {
             InitializeComponent();
+            Time.SetTime(8, 0);
             groundImage1 = new BitmapImage(new Uri("pack://application:,,,/Images/kep51.png"));
             groundImage2 = new BitmapImage(new Uri("pack://application:,,,/Images/kep52.png"));
             groundImage3 = new BitmapImage(new Uri("pack://application:,,,/Images/kep53.png"));
@@ -51,76 +55,87 @@ namespace PSZK_MarsRoverProject
             groundImage9 = new BitmapImage(new Uri("pack://application:,,,/Images/kep59.png"));
             obstacleImage = new BitmapImage(new Uri("pack://application:,,,/Images/obstacle2.png"));
             gemimage = new BitmapImage(new Uri("pack://application:,,,/Images/gem.png"));
-            CsvBeolvaso();
+            simTimer = new DispatcherTimer();
+            simTimer.Interval = TimeSpan.FromSeconds(Time.TimeRate);
+            simTimer.Tick += SimTimer_Tick;
+            simTimer.Start();
+            CsvReader();
             //terkep[32, 34] = "R";
-            JatekterFeltoltes();
+            FillUpGameSpace();
         }
 
-        private void JatekterFeltoltes()
+        private void SimTimer_Tick(object sender, EventArgs e)
         {
-            for (int i = 0; i < terkep.GetLength(0); i++)
+            Time.AddTime(); 
+            ido.Text = $"Idő: {Time.GetCurrentTimeString()} ({Time.CurrentDayProgression})";
+            //fogyasztás meg stb itt meghivhato
+        }
+
+        private void FillUpGameSpace()
+        {
+            for (int i = 0; i < map.GetLength(0); i++)
             {
-                for (int j = 0; j < terkep.GetLength(1); j++)
+                for (int j = 0; j < map.GetLength(1); j++)
                 {
                     //tile rajzolas
                     Image talaj = new Image()
                     {
-                        Width = tileMeret,
-                        Height = tileMeret,
+                        Width = tileSize,
+                        Height = tileSize,
                         Source = GetGroundImageSource(),
                         SnapsToDevicePixels = true
                     };
-                    Canvas.SetLeft(talaj, j * tileMeret);
-                    Canvas.SetTop(talaj, i * tileMeret);
+                    Canvas.SetLeft(talaj, j * tileSize);
+                    Canvas.SetTop(talaj, i * tileSize);
                     Panel.SetZIndex(talaj, 0); //legalso reteg
                     jatekter.Children.Add(talaj);
-                    string jel = terkep[i, j];
+                    string jel = map[i, j];
                     if (jel != "." && jel != "R")
                     {
                         Image targy = new Image()
                         {
-                            Width = tileMeret,
-                            Height = tileMeret,
+                            Width = tileSize,
+                            Height = tileSize,
                             Source = GetOtherImageSource(jel),
                             SnapsToDevicePixels = true
                         };
-                        Canvas.SetLeft(targy, j * tileMeret);
-                        Canvas.SetTop(targy, i * tileMeret);
+                        Canvas.SetLeft(targy, j * tileSize);
+                        Canvas.SetTop(targy, i * tileSize);
                         Panel.SetZIndex(targy, 1); // A talaj felett legyen
                         jatekter.Children.Add(targy);
                         // Ha ez egy gem (G, Y, B), elmentjük a referenciáját
                         if (jel == "G" || jel == "Y" || jel == "B")
                         {
-                            gemKepek[i, j] = targy;
+                            gemImg[i, j] = targy;
                         }
                     }
                 }
             }
             //rover rajzolás
-            roverKep = new Image()
+            roverImg = new Image()
             {
-                Width = tileMeret,
-                Height = tileMeret,
+                Width = tileSize,
+                Height = tileSize,
                 Source = new BitmapImage(new Uri("pack://application:,,,/Images/kicsikocsi.png")),
             };
             //A rover képe mindig a legfelső rétegben legyen
-            Panel.SetZIndex(roverKep, 10);
-            FrissitRoverPozicio();
-            jatekter.Children.Add(roverKep);
+            Panel.SetZIndex(roverImg, 10);
+            RefreshRoverPosition();
+            jatekter.Children.Add(roverImg);
         }
 
         /// <summary>
         /// A rover pozíciójának frissítése a játéktéren, valamint a pozíció szövegének frissítése
         /// </summary>
-        private void FrissitRoverPozicio()
+        private void RefreshRoverPosition()
         {
-            Canvas.SetLeft(roverKep, rover.Xposition * tileMeret);
-            Canvas.SetTop(roverKep, rover.Yposition * tileMeret);
+            Canvas.SetLeft(roverImg, rover.Xposition * tileSize);
+            Canvas.SetTop(roverImg, rover.Yposition * tileSize);
             txtPos.Text = $"X: {rover.Xposition}, Y: {rover.Yposition}";
             if (FollowRoverBox.IsChecked == true)
             {
-                kamera.ScrollToVerticalOffset(rover.Yposition * tileMeret - (kamera.ActualHeight / 2));
-                kamera.ScrollToHorizontalOffset(rover.Xposition * tileMeret - (kamera.ActualWidth / 2));
+                kamera.ScrollToVerticalOffset(rover.Yposition * tileSize - (kamera.ActualHeight / 2));
+                kamera.ScrollToHorizontalOffset(rover.Xposition * tileSize - (kamera.ActualWidth / 2));
             }
         }
 
@@ -167,8 +182,8 @@ namespace PSZK_MarsRoverProject
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            kamera.ScrollToVerticalOffset(rover.Yposition * tileMeret - (kamera.ActualHeight / 2));
-            kamera.ScrollToHorizontalOffset(rover.Xposition * tileMeret - (kamera.ActualWidth / 2));
+            kamera.ScrollToVerticalOffset(rover.Yposition * tileSize - (kamera.ActualHeight / 2));
+            kamera.ScrollToHorizontalOffset(rover.Xposition * tileSize - (kamera.ActualWidth / 2));
         }
 
         private void Window_KeyDown(object sender, KeyEventArgs e)
@@ -176,20 +191,20 @@ namespace PSZK_MarsRoverProject
             switch (e.Key)
             {
                 case Key.W:
-                    kamera.ScrollToVerticalOffset(kamera.VerticalOffset - tileMeret);
+                    kamera.ScrollToVerticalOffset(kamera.VerticalOffset - tileSize);
                     break;
                 case Key.S:
-                    kamera.ScrollToVerticalOffset(kamera.VerticalOffset + tileMeret);
+                    kamera.ScrollToVerticalOffset(kamera.VerticalOffset + tileSize);
                     break;
                 case Key.A:
-                    kamera.ScrollToHorizontalOffset(kamera.HorizontalOffset - tileMeret);
+                    kamera.ScrollToHorizontalOffset(kamera.HorizontalOffset - tileSize);
                     break;
                 case Key.D:
-                    kamera.ScrollToHorizontalOffset(kamera.HorizontalOffset + tileMeret);
+                    kamera.ScrollToHorizontalOffset(kamera.HorizontalOffset + tileSize);
                     break;
                 case Key.Space:
-                    kamera.ScrollToVerticalOffset(rover.Yposition * tileMeret - (kamera.ActualHeight / 2));
-                    kamera.ScrollToHorizontalOffset(rover.Xposition * tileMeret - (kamera.ActualWidth / 2));
+                    kamera.ScrollToVerticalOffset(rover.Yposition * tileSize - (kamera.ActualHeight / 2));
+                    kamera.ScrollToHorizontalOffset(rover.Xposition * tileSize - (kamera.ActualWidth / 2));
                     break;
                 case Key.R:
                     if (rover.Yposition > 0) rover.Yposition--;
@@ -204,25 +219,28 @@ namespace PSZK_MarsRoverProject
                     if (rover.Xposition > 0) rover.Xposition++;
                     break;
                 case Key.Q:
-                    string aktualisCella = terkep[rover.Yposition, rover.Xposition];
+                    string aktualisCella = map[rover.Yposition, rover.Xposition];
                     if (aktualisCella == "G" || aktualisCella == "Y" || aktualisCella == "B")
                     {
-                        terkep[rover.Yposition, rover.Xposition] = ".";
-                        if (gemKepek[rover.Yposition, rover.Xposition] != null)
+                        map[rover.Yposition, rover.Xposition] = ".";
+                        if (gemImg[rover.Yposition, rover.Xposition] != null)
                         {
-                            jatekter.Children.Remove(gemKepek[rover.Yposition, rover.Xposition]);
-                            gemKepek[rover.Yposition, rover.Xposition] = null;
+                            jatekter.Children.Remove(gemImg[rover.Yposition, rover.Xposition]);
+                            gemImg[rover.Yposition, rover.Xposition] = null;
                         }
                     }
                     break;
+                case Key.F:
+                    ido.Text = $"Idő: {Time.GetCurrentTimeString()}";
+                    break;
                 case Key.E:
-                    int[] celKordinata = RoverAI.LegkozelebbiGemKereses(terkep,rover);
+                    int[] celKordinata = RoverAI.LegkozelebbiGemKereses(map,rover);
                     celPozicio.Text = $"X: {celKordinata[1]}, Y: {celKordinata[0]}";
                     break;
             }
-            FrissitRoverPozicio();
+            RefreshRoverPosition();
         }
-        private void CsvBeolvaso()
+        private void CsvReader()
         {
             if (!File.Exists("mars_map_50x50.csv"))
             {
@@ -235,7 +253,7 @@ namespace PSZK_MarsRoverProject
                 string[] elemek = sorok[i].Split(',');
                 for (int j = 0; j < elemek.Length && j < 50; j++)
                 {
-                    terkep[i, j] = elemek[j];
+                    map[i, j] = elemek[j];
                 }
             }
         }
