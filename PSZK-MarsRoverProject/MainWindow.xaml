@@ -10,8 +10,8 @@
         Title="MainWindow" Height="450" Width="800">
     <Grid>
         <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="2.7*" />
             <ColumnDefinition Width="*" />
-            <ColumnDefinition Width="250" />
         </Grid.ColumnDefinitions>
 
         <!-- Játékterület -->
