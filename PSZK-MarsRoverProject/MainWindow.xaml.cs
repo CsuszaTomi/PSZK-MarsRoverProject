@@ -260,7 +260,7 @@ namespace PSZK_MarsRoverProject
 
         private void BoostButton3_Click(object sender, RoutedEventArgs e)
         {
-            Time.TimeRate = 0.1;
+            Time.TimeRate = 0.01;
             simTimer.Interval = TimeSpan.FromSeconds(Time.TimeRate);
         }
 

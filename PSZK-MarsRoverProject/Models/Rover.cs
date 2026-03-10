@@ -43,6 +43,7 @@ namespace PSZK_MarsRoverProject.Models
         public void DrainBattery(float amount)
         {
             BatteryLevel -= amount;
+            AllBatteryUsage += amount;
         }
 
         public void ChargeBattery(SimulationTime time)
