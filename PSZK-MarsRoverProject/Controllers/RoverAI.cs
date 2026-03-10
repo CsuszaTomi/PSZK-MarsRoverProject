@@ -10,15 +10,16 @@ namespace PSZK_MarsRoverProject.Controllers
     internal class RoverAI
     {
         /// <summary>
-        /// A* algoritmus alapú útvonaltervező, amely meghatározza a legközelebbi 
-        /// gyűjthető ásvány (Kék: "B", Sárga: "Y", Zöld: "G") koordinátáit.
+        /// A* algoritmus alapú útvonaltervező, amely megkeresi a legközelebbi 
+        /// gyűjthető ásványt (Kék: "B", Sárga: "Y", Zöld: "G") a térképen, és 
+        /// kiszámítja az odavezető legoptimálisabb útvonalat.
         /// Az algoritmus támogatja a 8 irányú mozgást (átlós is) és prioritási sort 
         /// használ a költségek (távolság/energia) optimalizálása érdekében.
         /// </summary>
         /// <param name="terkep">Az 50x50-es marsi felszínt reprezentáló 2D tömb.</param>
         /// <param name="rover">A rover aktuális pozícióját és állapotát tároló objektum.</param>
-        /// <returns>A legközelebbi ásvány [sor, oszlop] koordinátái, vagy null, ha nincs elérhető célpont.</returns>
-        static public int[] LegkozelebbiGemKereses(string[,] terkep, Rover rover)
+        /// <returns>A startponttól a célig vezető koordináták listája (ahol a 0. elem a kiindulópont), vagy null, ha nincs elérhető célpont.</returns>
+        static public List<int[]> LegkozelebbiGemKereses(string[,] terkep, Rover rover)
         {
             int sor = terkep.GetLength(0);
             int oszlop = terkep.GetLength(1);
@@ -49,7 +50,7 @@ namespace PSZK_MarsRoverProject.Controllers
                 //Cel ellenorzese
                 if (terkep[curr.X, curr.Y] == "G" || terkep[curr.X, curr.Y] == "Y" || terkep[curr.X, curr.Y] == "B")
                 {
-                    return new int[] { curr.X, curr.Y };
+                    return UtvonalOsszeallitasa(curr);
                 }
                 //szomszedok vizsgalata
                 for (int i = 0; i < directions.GetLength(0); i++)
@@ -66,16 +67,35 @@ namespace PSZK_MarsRoverProject.Controllers
                         if (ujG < eddigiKoltseg[szomszedX, szomszedY])
                         {
                             eddigiKoltseg[szomszedX, szomszedY] = ujG;
-                            // Heurisztika (H): Mivel nem tudjuk melyik a legközelebbi gem, 
-                            // a keresésnél a H értéke 0.
-                            // Ha lenne fix célpontod, ide a távolságot írnánk.
-                            Node szomszed = new Node(szomszedX, szomszedY, ujG, 0);
+                            //curr lessz a szomszed szülője
+                            Node szomszed = new Node(szomszedX, szomszedY, ujG, 0, curr);
                             q.Enqueue(szomszed, szomszed.F);
                         }
                     }
                 }
             }
             return null;
+        }
+
+        /// <summary>
+        /// Visszafejti a megtalált útvonalat a célponttól a kiindulási pontig 
+        /// a Node-ok szülő (Parent) referenciái alapján.
+        /// </summary>
+        /// <param name="celpont">Az A* algoritmus által megtalált célállomás csomópontja.</param>
+        /// <returns>A lépések sorrendjét tartalmazó lista, ahol az első elem a startpont, az utolsó pedig a cél.</returns>
+        static List<int[]> UtvonalOsszeallitasa(Node celpont)
+        {
+            List<int[]> utvonal = new List<int[]>();
+            Node aktualis = celpont;
+            // Visszafejtjük az útvonalat a célponttól a kiindulási pontig
+            while (aktualis != null)
+            {
+                // Az aktuális csomópont koordinátáit hozzáadjuk az útvonalhoz
+                utvonal.Add(new int[] { aktualis.X, aktualis.Y });
+                aktualis = aktualis.Parent;
+            }
+            utvonal.Reverse(); //start lessz elso
+            return utvonal;
         }
     }
 }

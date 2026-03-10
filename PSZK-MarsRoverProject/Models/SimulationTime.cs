@@ -12,6 +12,7 @@ namespace PSZK_MarsRoverProject.Models
         public TimeSpan TimeSpent { get; set; } = TimeSpan.Zero;
         public double TimeRate { get; set; } = 1;
 
+
         public void SetTime(int hour, int minute)
         {
             // Beállítjuk az órát és percet a jelenlegi napon belül
@@ -30,9 +31,10 @@ namespace PSZK_MarsRoverProject.Models
             UpdateDayState();
         }
 
+
         public void UpdateDayState()
         {
-            if (CurrentTime.Hour >= 8 && CurrentTime.Hour < 20)
+            if (CurrentTime.Hour >= 6 && CurrentTime.Hour < 22)
             {
                 IsDay = true;
                 CurrentDayProgression = "nappal";
