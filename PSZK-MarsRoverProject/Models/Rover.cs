@@ -37,6 +37,7 @@ namespace PSZK_MarsRoverProject.Models
                 {
                     IsCharging = true;
                     BatteryLevel += 10;
+                    if (BatteryLevel > 100) BatteryLevel = 100;
                 }
             }
             else

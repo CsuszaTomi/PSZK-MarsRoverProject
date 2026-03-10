@@ -10,13 +10,15 @@ namespace PSZK_MarsRoverProject.Models
     {
         public int X;
         public int Y;
-        public double G; // Eddigi költség (mennyi energiát használtunk el idáig)
-        public double H; // Heurisztika (becsült távolság a célig)
-        public double F => G + H; // Összesített érték
+        public double G; //koltseg
+        public double H; //heurisztika
+        public double F => G + H; //teljes koltseg (G + H)
+        public Node Parent; // elozo node a pathban
 
-        public Node(int x, int y, double g, double h)
+        public Node(int x, int y, double g, double h, Node parent = null)
         {
             X = x; Y = y; G = g; H = h;
+            Parent = parent;
         }
     }
 }

@@ -37,6 +37,7 @@ namespace PSZK_MarsRoverProject
         public bool FollowRover;
         public const int tileSize = 80;
         public SimulationTime Time = new SimulationTime();
+        List<int[]> activePath = null;
         public MainWindow()
         {
             InitializeComponent();
@@ -48,7 +49,7 @@ namespace PSZK_MarsRoverProject
             groundImage5 = new BitmapImage(new Uri("pack://application:,,,/Images/ground5.png"));
             groundImage6 = new BitmapImage(new Uri("pack://application:,,,/Images/ground6.png"));
             obstacleImage = new BitmapImage(new Uri("pack://application:,,,/Images/obstacle2.png"));
-            gemimage = new BitmapImage(new Uri("pack://application:,,,/Images/gemrol.png"));
+            gemimage = new BitmapImage(new Uri("pack://application:,,,/Images/bluegem.png"));
             simTimer = new DispatcherTimer();
             simTimer.Interval = TimeSpan.FromSeconds(Time.TimeRate);
             simTimer.Tick += SimTimer_Tick;
@@ -60,9 +61,61 @@ namespace PSZK_MarsRoverProject
 
         private void SimTimer_Tick(object sender, EventArgs e)
         {
-            Time.AddTime(); 
+            //idolepes
+            Time.AddTime();
+            //toltes
+            rover.ChargeBattery(Time);
+            //akciók végrehajtása
+            if (rover.IsMining)
+            {
+                // Bányászat végrehajtása
+                rover.Mine();
+                rover.IsMining = false; // Befejezte a bányászatot (fél óra telt el)
+                // A bányászat helyén a térkép újra üres lesz
+                map[rover.Yposition, rover.Xposition] = ".";
+                if (gemImg[rover.Yposition, rover.Xposition] != null)
+                {
+                    jatekter.Children.Remove(gemImg[rover.Yposition, rover.Xposition]);
+                    gemImg[rover.Yposition, rover.Xposition] = null;
+                }
+            }
+            else if (activePath != null && activePath.Count > 0)
+            {
+                // Mozgás végrehajtása a meghatározott útvonalon
+                int desiredSpeed = Time.IsDay ? 2 : 1;
+                // Ha kevesebb lépés van hátra, mint a sebességünk, akkor csak annyit megyünk
+                rover.CurrentSpeed = Math.Min(desiredSpeed, activePath.Count);
+                // Fogyasztás levonása a sebesség alapján (E = 2 * v^2)
+                rover.MovementEnergyConsumption();
+                // Lépések megtétele a listában
+                for (int i = 0; i < rover.CurrentSpeed; i++)
+                {
+                    int[] nextStep = activePath[0];
+                    rover.Yposition = nextStep[0]; // Y a sor
+                    rover.Xposition = nextStep[1]; // X az oszlop
+                    activePath.RemoveAt(0);// Az első elemet eltávolítjuk, mert már odaértünk
+                }
+
+                //utvege
+                if (activePath.Count == 0)
+                {
+                    rover.IsMining = true;
+                }
+            }
+            else
+            {
+                //standby
+                rover.BatteryLevel -= 1;
+            }
+            // Ellenőrizzük, hogy a rover lemerült-e
+            if (rover.BatteryLevel <= 0)
+            {
+                rover.BatteryLevel = 0;
+                simTimer.Stop();
+                MessageBox.Show("A küldetés véget ért: A Rover lemerült!");
+            }
             ido.Text = $"Idő: {Time.GetCurrentTimeString()} ({Time.CurrentDayProgression})";
-            //fogyasztás meg stb itt meghivhato
+            RefreshRoverPosition();
         }
 
         /// <summary>
@@ -134,8 +187,17 @@ namespace PSZK_MarsRoverProject
                     ido.Text = $"Idő: {Time.GetCurrentTimeString()}";
                     break;
                 case Key.E:
-                    int[] celKordinata = RoverAI.LegkozelebbiGemKereses(map,rover);
-                    celPozicio.Text = $"X: {celKordinata[1]}, Y: {celKordinata[0]}";
+                    activePath = RoverAI.LegkozelebbiGemKereses(map, rover);
+                    if (activePath != null && activePath.Count > 0)
+                    {
+                        // Az utolsó elem a listában a célpontunk
+                        var cel = activePath.Last();
+                        celPozicio.Text = $"Cél -> X: {cel[1]}, Y: {cel[0]}"; // Felcseréltem, hogy X,Y legyen
+                    }
+                    else
+                    {
+                        celPozicio.Text = "Nincs elérhető cél!";
+                    }
                     break;
             }
             RefreshRoverPosition();
