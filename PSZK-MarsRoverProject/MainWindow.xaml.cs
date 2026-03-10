@@ -159,5 +159,16 @@ namespace PSZK_MarsRoverProject
             Time.TimeRate = 1;
             simTimer.Interval = TimeSpan.FromSeconds(Time.TimeRate);
         }
+        private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            if (e.NewSize.Height >= 800)
+            {
+                StatisztikaExpander.IsExpanded = true;
+            }
+            else
+            {
+                StatisztikaExpander.IsExpanded = false;
+            }
+        }
     }
 }
