@@ -79,8 +79,8 @@
 
                                 <Path Fill="#ffc107" Data="M 70,70 L 135,45 A 70,70 0 0,1 125,115 Z" />
 
-                                <Ellipse Width="70" Height="70" Fill="#2d2d30" />
-                                <TextBlock Text="100 W" Foreground="White" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                <Ellipse Width="90" Height="90" Fill="#2d2d30" />
+                                <TextBlock x:Name="egysegnyiüzemanyag" Text="100 W" Foreground="White" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                             </Grid>
 
                             <Grid Margin="0,15,0,5">

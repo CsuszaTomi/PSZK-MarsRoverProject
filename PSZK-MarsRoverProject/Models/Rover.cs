@@ -11,6 +11,7 @@ namespace PSZK_MarsRoverProject.Models
         public Rover() { }
         public int Xposition { get; set; }
         public int Yposition { get; set; }
+        public float AllBatteryUsage { get; set; }
         public float BatteryLevel { get; set; }
         public bool IsCharging { get; set; }
 
@@ -21,6 +22,7 @@ namespace PSZK_MarsRoverProject.Models
         public void MovementEnergyConsumption()
         {
             float usedEnergy = 2 * (float)Math.Pow(CurrentSpeed, 2);
+            AllBatteryUsage += usedEnergy;
             BatteryLevel -= usedEnergy;
         }
 
