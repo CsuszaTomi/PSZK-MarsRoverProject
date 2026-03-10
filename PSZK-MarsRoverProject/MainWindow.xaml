@@ -80,7 +80,7 @@
                                 <Path Fill="#ffc107" Data="M 70,70 L 135,45 A 70,70 0 0,1 125,115 Z" />
 
                                 <Ellipse Width="90" Height="90" Fill="#2d2d30" />
-                                <TextBlock x:Name="egysegnyiüzemanyag" Text="100 W" Foreground="White" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                <TextBlock x:Name="egysegnyiuzemanyag" Text="0 egység" Foreground="White" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                             </Grid>
 
                             <Grid Margin="0,15,0,5">
@@ -92,17 +92,17 @@
 
                                 <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="5">
                                     <Rectangle Width="12" Height="12" Fill="#007acc" RadiusX="2" RadiusY="2" Margin="0,0,10,0"/>
-                                    <TextBlock Text="Meghajtás (Motorok)" Foreground="White" FontSize="12"/>
+                                    <TextBlock Text="1 mező/30p 2 egység energia" Foreground="White" FontSize="12"/>
                                 </StackPanel>
 
                                 <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="5">
                                     <Rectangle Width="12" Height="12" Fill="#4caf50" RadiusX="2" RadiusY="2" Margin="0,0,10,0"/>
-                                    <TextBlock Text="Tudományos műszerek" Foreground="White" FontSize="12"/>
+                                    <TextBlock Text="2 mező/30p 8 egység energia" Foreground="White" FontSize="12"/>
                                 </StackPanel>
 
                                 <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="5">
                                     <Rectangle Width="12" Height="12" Fill="#ffc107" RadiusX="2" RadiusY="2" Margin="0,0,10,0"/>
-                                    <TextBlock Text="Kommunikáció (Föld)" Foreground="White" FontSize="12"/>
+                                    <TextBlock Text="3 mező/30p 18 egység energia" Foreground="White" FontSize="12"/>
                                 </StackPanel>
                             </Grid>
                         </StackPanel>

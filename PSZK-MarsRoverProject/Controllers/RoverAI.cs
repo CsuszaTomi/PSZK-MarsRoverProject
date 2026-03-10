@@ -88,7 +88,7 @@ namespace PSZK_MarsRoverProject.Controllers
             List<int[]> utvonal = new List<int[]>();
             Node aktualis = celpont;
             // Visszafejtjük az útvonalat a célponttól a kiindulási pontig
-            while (aktualis != null)
+            while (aktualis != null && aktualis.Parent != null)
             {
                 // Az aktuális csomópont koordinátáit hozzáadjuk az útvonalhoz
                 utvonal.Add(new int[] { aktualis.X, aktualis.Y });

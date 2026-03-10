@@ -69,7 +69,7 @@ namespace PSZK_MarsRoverProject
             if (rover.IsMining)
             {
                 // Bányászat végrehajtása
-                rover.Mine();
+                rover.Mine(Time);
                 rover.IsMining = false; // Befejezte a bányászatot (fél óra telt el)
                 // A bányászat helyén a térkép újra üres lesz
                 map[rover.Yposition, rover.Xposition] = ".";
@@ -82,7 +82,7 @@ namespace PSZK_MarsRoverProject
             else if (activePath != null && activePath.Count > 0)
             {
                 // Mozgás végrehajtása a meghatározott útvonalon
-                int desiredSpeed = Time.IsDay ? 2 : 1;
+                int desiredSpeed = GetOptimalSpeed(activePath.Count);
                 // Ha kevesebb lépés van hátra, mint a sebességünk, akkor csak annyit megyünk
                 rover.CurrentSpeed = Math.Min(desiredSpeed, activePath.Count);
                 // Fogyasztás levonása a sebesség alapján (E = 2 * v^2)
@@ -107,6 +107,12 @@ namespace PSZK_MarsRoverProject
                 //standby
                 rover.DrainBattery(1);
             }
+
+            egysegnyiuzemanyag.Text = $"{rover.AllBatteryUsage.ToString()} egység";
+            EnergyBar.Value = rover.BatteryLevel;
+            ido.Text = $"Idő: {Time.GetCurrentTimeString()} ({Time.CurrentDayProgression})";
+            RefreshRoverPosition();
+
             // Ellenőrizzük, hogy a rover lemerült-e
             if (rover.BatteryLevel <= 0)
             {
@@ -114,8 +120,44 @@ namespace PSZK_MarsRoverProject
                 simTimer.Stop();
                 MessageBox.Show("A küldetés véget ért: A Rover lemerült!");
             }
-            ido.Text = $"Idő: {Time.GetCurrentTimeString()} ({Time.CurrentDayProgression})";
-            RefreshRoverPosition();
+        }
+
+
+        private int GetOptimalSpeed(int hatralevoLepesek)
+        {
+            int speed = 1;
+
+            if (Time.IsDay)
+            {
+                // NAPPAL (+10 töltés)
+                if (rover.BatteryLevel >= 80)
+                {
+                    speed = 3; // Fogyasztás: 18, Töltés: 10 -> Nettó: -8
+                }
+                else if (rover.BatteryLevel >= 20)
+                {
+                    speed = 2; // Fogyasztás: 8, Töltés: 10 -> Nettó: +2
+                }
+                else
+                {
+                    speed = 1; // Fogyasztás: 2, Töltés: 10 -> Nettó: +8
+                }
+            }
+            else
+            {
+                // ÉJSZAKA (0 töltés)
+                if (rover.BatteryLevel >= 40)
+                {
+                    speed = 2; // Fogyasztás: 8 -> Nettó: -8
+                }
+                else
+                {
+                    speed = 1; // Fogyasztás: 2 -> Nettó: -2
+                               // A 3-as sebességet éjjel tiltjuk, hogy ne haljon meg gyorsan
+                }
+            }
+
+            return Math.Min(speed, hatralevoLepesek);
         }
 
         /// <summary>
@@ -212,7 +254,7 @@ namespace PSZK_MarsRoverProject
 
         private void BoostButton2_Click(object sender, RoutedEventArgs e)
         {
-            Time.TimeRate = 0.2;
+            Time.TimeRate = 0.5;
             simTimer.Interval = TimeSpan.FromSeconds(Time.TimeRate);
         }
 

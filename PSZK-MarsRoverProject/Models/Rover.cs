@@ -21,14 +21,23 @@ namespace PSZK_MarsRoverProject.Models
 
         public void MovementEnergyConsumption()
         {
-            float usedEnergy = 2 * (float)Math.Pow(CurrentSpeed, 2);
+            float usedEnergy = 2 * (CurrentSpeed*CurrentSpeed);
             AllBatteryUsage += usedEnergy;
             BatteryLevel -= usedEnergy;
         }
 
-        public void Mine()
+        public void Mine(SimulationTime time)
         {
-            BatteryLevel -= 2;
+            if (time.IsDay)
+            {
+                BatteryLevel += 8;
+                AllBatteryUsage += 2;
+            }
+            else
+            {
+                BatteryLevel -= 2;
+                AllBatteryUsage += 2;
+            }
         }
 
         public void DrainBattery(float amount)
@@ -38,17 +47,30 @@ namespace PSZK_MarsRoverProject.Models
 
         public void ChargeBattery(SimulationTime time)
         {
-            if (time.CurrentDayProgression == "nappal")
+            if (time.IsDay && CurrentSpeed != 3)
             {
-                if(BatteryLevel <= 100)
+                IsCharging = true;
+                BatteryLevel += 10;
+
+                // Ne menjen 100 fölé (elég egyszer a végére írni!)
+                if (BatteryLevel > 100)
                 {
-                    IsCharging = true;
-                    BatteryLevel += 10;
-                    if (BatteryLevel > 100) BatteryLevel = 100;
+                    BatteryLevel = 100;
+                }
+            }
+            else if (time.IsDay && CurrentSpeed == 3)
+            {
+                IsCharging = false;
+                BatteryLevel += 10;
+
+                if (BatteryLevel > 100)
+                {
+                    BatteryLevel = 100;
                 }
             }
             else
             {
+                // Éjszaka nincs töltés
                 IsCharging = false;
             }
         }
