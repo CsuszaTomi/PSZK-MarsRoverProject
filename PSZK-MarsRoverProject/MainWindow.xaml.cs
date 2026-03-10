@@ -38,10 +38,12 @@ namespace PSZK_MarsRoverProject
         public const int tileSize = 80;
         public SimulationTime Time = new SimulationTime();
         List<int[]> activePath = null;
+        bool gameOn = false;
         public MainWindow()
         {
             InitializeComponent();
             Time.SetTime(8, 0);
+
             groundImage1 = new BitmapImage(new Uri("pack://application:,,,/Images/ground1.png"));
             groundImage2 = new BitmapImage(new Uri("pack://application:,,,/Images/ground2.png"));
             groundImage3 = new BitmapImage(new Uri("pack://application:,,,/Images/ground3.png"));
@@ -66,6 +68,26 @@ namespace PSZK_MarsRoverProject
             //toltes
             rover.ChargeBattery(Time);
             //akciók végrehajtása
+            if (gameOn)
+            {
+                // Ha a Rover épp nem bányászik, és nincs is hova mennie (üres az út),
+                // akkor itt az ideje, hogy az AI új célt keressen!
+                if (!rover.IsMining && (activePath == null || activePath.Count == 0))
+                {
+                    activePath = RoverAI.LegkozelebbiGemKereses(map, rover);
+
+                    if (activePath != null && activePath.Count > 0)
+                    {
+                        var cel = activePath.Last();
+                        celPozicio.Text = $"Cél -> X: {cel[1]}, Y: {cel[0]}";
+                    }
+                    else
+                    {
+                        celPozicio.Text = "Nincs több elérhető ásvány!";
+                        gameOn = false; // Le is állíthatjuk a játékot, ha nincs több cél
+                    }
+                }
+            }
             if (rover.IsMining)
             {
                 // Bányászat végrehajtása
@@ -187,17 +209,7 @@ namespace PSZK_MarsRoverProject
                     ido.Text = $"Idő: {Time.GetCurrentTimeString()}";
                     break;
                 case Key.E:
-                    activePath = RoverAI.LegkozelebbiGemKereses(map, rover);
-                    if (activePath != null && activePath.Count > 0)
-                    {
-                        // Az utolsó elem a listában a célpontunk
-                        var cel = activePath.Last();
-                        celPozicio.Text = $"Cél -> X: {cel[1]}, Y: {cel[0]}"; // Felcseréltem, hogy X,Y legyen
-                    }
-                    else
-                    {
-                        celPozicio.Text = "Nincs elérhető cél!";
-                    }
+                    gameOn = !gameOn;
                     break;
             }
             RefreshRoverPosition();
