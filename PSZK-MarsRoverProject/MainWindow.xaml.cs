@@ -105,7 +105,7 @@ namespace PSZK_MarsRoverProject
             else
             {
                 //standby
-                rover.BatteryLevel -= 1;
+                rover.DrainBattery(1);
             }
             // Ellenőrizzük, hogy a rover lemerült-e
             if (rover.BatteryLevel <= 0)

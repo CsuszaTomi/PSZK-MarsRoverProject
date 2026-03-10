@@ -29,6 +29,11 @@ namespace PSZK_MarsRoverProject.Models
             BatteryLevel -= 2;
         }
 
+        public void DrainBattery(float amount)
+        {
+            BatteryLevel -= amount;
+        }
+
         public void ChargeBattery(SimulationTime time)
         {
             if (time.CurrentDayProgression == "nappal")
