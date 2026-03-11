@@ -88,21 +88,33 @@
                                     <RowDefinition Height="Auto"/>
                                     <RowDefinition Height="Auto"/>
                                     <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
                                 </Grid.RowDefinitions>
 
                                 <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="5">
                                     <Rectangle Width="12" Height="12" Fill="#007acc" RadiusX="2" RadiusY="2" Margin="0,0,10,0"/>
-                                    <TextBlock Text="1 mező/30p 2 egység energia" Foreground="White" FontSize="12"/>
+                                    <TextBlock  x:Name="egyblokk" Text="1 mező/30p 2 egység energia" Foreground="White" FontSize="12"/>
                                 </StackPanel>
 
                                 <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="5">
                                     <Rectangle Width="12" Height="12" Fill="#4caf50" RadiusX="2" RadiusY="2" Margin="0,0,10,0"/>
-                                    <TextBlock Text="2 mező/30p 8 egység energia" Foreground="White" FontSize="12"/>
+                                    <TextBlock x:Name="kettőblokk" Text="2 mező/30p 8 egység energia" Foreground="White" FontSize="12"/>
                                 </StackPanel>
 
                                 <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="5">
                                     <Rectangle Width="12" Height="12" Fill="#ffc107" RadiusX="2" RadiusY="2" Margin="0,0,10,0"/>
-                                    <TextBlock Text="3 mező/30p 18 egység energia" Foreground="White" FontSize="12"/>
+                                    <TextBlock x:Name="háromblokk" Text="3 mező/30p 18 egység energia" Foreground="White" FontSize="12"/>
+                                </StackPanel>
+
+                                <StackPanel Grid.Row="3" Orientation="Horizontal" Margin="5">
+                                    <Rectangle Width="12" Height="12" Fill="#cff150" RadiusX="2" RadiusY="2" Margin="0,0,10,0"/>
+                                    <TextBlock x:Name="miningenergy" Text="mining energy" Foreground="White" FontSize="12"/>
+                                </StackPanel>
+
+                                <StackPanel Grid.Row="4" Orientation="Horizontal" Margin="5">
+                                    <Rectangle Width="12" Height="12" Fill="#c150" RadiusX="2" RadiusY="2" Margin="0,0,10,0"/>
+                                    <TextBlock x:Name="standybyenergy" Text="standby energy" Foreground="White" FontSize="12"/>
                                 </StackPanel>
                             </Grid>
                         </StackPanel>

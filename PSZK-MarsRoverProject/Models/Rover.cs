@@ -12,6 +12,11 @@ namespace PSZK_MarsRoverProject.Models
         public int Xposition { get; set; }
         public int Yposition { get; set; }
         public float AllBatteryUsage { get; set; }
+        public float Speed3BatteryUsage { get; set; }
+        public float Speed2BatteryUsage { get; set; }
+        public float Speed1BatteryUsage { get; set; }
+        public float StandByBatteryUsage { get; set; }
+        public float MiningBatteryUsage { get; set; }
         public float BatteryLevel { get; set; }
         public bool IsCharging { get; set; }
 
@@ -22,6 +27,18 @@ namespace PSZK_MarsRoverProject.Models
         public void MovementEnergyConsumption()
         {
             float usedEnergy = 2 * (CurrentSpeed*CurrentSpeed);
+            if (CurrentSpeed == 3)
+            {
+                Speed3BatteryUsage += usedEnergy;
+            }
+            else if (CurrentSpeed == 2)
+            {
+                Speed2BatteryUsage += usedEnergy;
+            }
+            else if (CurrentSpeed == 1)
+            {
+                Speed1BatteryUsage += usedEnergy;
+            }
             AllBatteryUsage += usedEnergy;
             BatteryLevel -= usedEnergy;
         }
@@ -32,11 +49,13 @@ namespace PSZK_MarsRoverProject.Models
             {
                 BatteryLevel += 8;
                 AllBatteryUsage += 2;
+                MiningBatteryUsage += 2;
             }
             else
             {
                 BatteryLevel -= 2;
                 AllBatteryUsage += 2;
+                MiningBatteryUsage += 2;
             }
         }
 
@@ -53,7 +72,7 @@ namespace PSZK_MarsRoverProject.Models
                 IsCharging = true;
                 BatteryLevel += 10;
 
-                // Ne menjen 100 fölé (elég egyszer a végére írni!)
+                // Ne menjen 100 fölé
                 if (BatteryLevel > 100)
                 {
                     BatteryLevel = 100;
