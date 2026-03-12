@@ -1,5 +1,4 @@
-﻿using PSZK_MarsRoverProject.Controllers;
-using PSZK_MarsRoverProject.Models;
+﻿using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Windows;
@@ -13,6 +12,8 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
+using PSZK_MarsRoverProject.Controllers;
+using PSZK_MarsRoverProject.Models;
 
 namespace PSZK_MarsRoverProject
 {
@@ -25,6 +26,7 @@ namespace PSZK_MarsRoverProject
         public string[,] map = new string[50, 50];
         public Image[,] gemImg = new Image[50, 50];
         Rover rover = new Rover() { Xposition = 32, Yposition = 34, BatteryLevel = 100, IsCharging = true };
+        Log log = new Log();
         public Image roverImg;
         public BitmapImage groundImage1;
         public BitmapImage groundImage2;
@@ -130,16 +132,13 @@ namespace PSZK_MarsRoverProject
                 {
                     //standby
                     rover.DrainBattery(1);
+                    simTimer.Stop();
                 }
             }
 
             egysegnyiuzemanyag.Text = $"{rover.AllBatteryUsage.ToString()} egység";
+            UpdateChart();
             EnergyBar.Value = rover.BatteryLevel;
-            egyblokk.Text = $"{rover.Speed1BatteryUsage}";
-            kettőblokk.Text = $"{rover.Speed2BatteryUsage}";
-            háromblokk.Text = $"{rover.Speed3BatteryUsage}";
-            miningenergy.Text = $"{rover.MiningBatteryUsage}";
-            standybyenergy.Text = $"{rover.StandByBatteryUsage}";
             ido.Text = $"Idő: {Time.GetCurrentTimeString()} ({Time.CurrentDayProgression})";
             RefreshRoverPosition();
 
@@ -186,6 +185,7 @@ namespace PSZK_MarsRoverProject
                                // A 3-as sebességet éjjel tiltjuk, hogy ne haljon meg gyorsan
                 }
             }
+            log.DistanceTraveled += Math.Min(speed, hatralevoLepesek);
 
             return Math.Min(speed, hatralevoLepesek);
         }
@@ -210,6 +210,73 @@ namespace PSZK_MarsRoverProject
             kamera.ScrollToVerticalOffset(rover.Yposition * tileSize - (kamera.ActualHeight / 2));
             kamera.ScrollToHorizontalOffset(rover.Xposition * tileSize - (kamera.ActualWidth / 2));
         }
+
+        private string DrawPieSlice(double radius, double startAngle, double sweepAngle)
+        {
+            // A kör közepe a 140x140-es méret alapján
+            double centerX = 70;
+            double centerY = 70;
+
+            if (sweepAngle >= 360) sweepAngle = 359.999;
+
+            // Szögek átváltása radiánba a -90 azért kell, hogy felülről, 12 órától induljon a rajz
+            double startRad = (startAngle - 90) * Math.PI / 180.0;
+            double endRad = (startAngle + sweepAngle - 90) * Math.PI / 180.0;
+
+            // Kezdő és végpontok kiszámítása a kör ívén
+            double x1 = centerX + radius * Math.Cos(startRad);
+            double y1 = centerY + radius * Math.Sin(startRad);
+
+            double x2 = centerX + radius * Math.Cos(endRad);
+            double y2 = centerY + radius * Math.Sin(endRad);
+
+            // Ha 180 foknál nagyobb a szelet, a "nagy ívet" kell rajzolnia
+            int isLargeArc = sweepAngle > 180 ? 1 : 0;
+
+            // Itt rakjuk össze a XAML szöveget (a CultureInfo kell, hogy pontot használjon tizedesjelként)
+            return $"M {centerX},{centerY} L {x1.ToString(CultureInfo.InvariantCulture)},{y1.ToString(CultureInfo.InvariantCulture)} " +
+                   $"A {radius},{radius} 0 {isLargeArc},1 {x2.ToString(CultureInfo.InvariantCulture)},{y2.ToString(CultureInfo.InvariantCulture)} Z";
+        }
+
+        // 2. A frissítő metódus, amit meg tudsz hívni
+        public void UpdateChart()
+        {
+            // 1. Összes energia kiszámítása
+            double total = rover.Speed1BatteryUsage +
+                           rover.Speed2BatteryUsage +
+                           rover.Speed3BatteryUsage +
+                           rover.MiningBatteryUsage +
+                           rover.StandByBatteryUsage;
+
+            // Ha még nem fogyasztott semmit, nem rajzolunk semmit
+            if (total == 0) return;
+
+            // 2. Kiszámoljuk, melyik hány fokot kap a 360-ból
+            double a1 = (rover.Speed1BatteryUsage / total) * 360;
+            double a2 = (rover.Speed2BatteryUsage / total) * 360;
+            double a3 = (rover.Speed3BatteryUsage / total) * 360;
+            double a4 = (rover.MiningBatteryUsage / total) * 360;
+            double a5 = (rover.StandByBatteryUsage / total) * 360;
+
+            double currentAngle = 0;
+
+            // 3. Szeletek megrajzolása sorban egymás után
+            SliceSpeed1.Data = Geometry.Parse(DrawPieSlice(70, currentAngle, a1));
+            currentAngle += a1;
+
+            SliceSpeed2.Data = Geometry.Parse(DrawPieSlice(70, currentAngle, a2));
+            currentAngle += a2;
+
+            SliceSpeed3.Data = Geometry.Parse(DrawPieSlice(70, currentAngle, a3));
+            currentAngle += a3;
+
+            SliceMining.Data = Geometry.Parse(DrawPieSlice(70, currentAngle, a4));
+            currentAngle += a4;
+
+            SliceStandby.Data = Geometry.Parse(DrawPieSlice(70, currentAngle, a5));
+        }
+
+
 
         private void Window_KeyDown(object sender, KeyEventArgs e)
         {

@@ -73,12 +73,13 @@
                             <TextBlock Text="Áramfogyasztás megoszlása" Foreground="#aaaaaa" FontSize="12" HorizontalAlignment="Center" Margin="0,5,0,15"/>
 
                             <Grid Width="140" Height="140" HorizontalAlignment="Center">
-                                <Ellipse Fill="#007acc" />
+                                <Ellipse Fill="#3e3e42" />
 
-                                <Path Fill="#4caf50" Data="M 70,70 L 70,0 A 70,70 0 0,1 135,45 Z" />
-
-                                <Path Fill="#ffc107" Data="M 70,70 L 135,45 A 70,70 0 0,1 125,115 Z" />
-
+                                <Path x:Name="SliceSpeed1" Fill="#007acc" />
+                                <Path x:Name="SliceSpeed2" Fill="#4caf50" />
+                                <Path x:Name="SliceSpeed3" Fill="#ffc107" />
+                                <Path x:Name="SliceMining" Fill="#cff150" />
+                                <Path x:Name="SliceStandby" Fill="#f44336" />
                                 <Ellipse Width="90" Height="90" Fill="#2d2d30" />
                                 <TextBlock x:Name="egysegnyiuzemanyag" Text="0 egység" Foreground="White" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                             </Grid>
@@ -117,6 +118,18 @@
                                     <TextBlock x:Name="standybyenergy" Text="standby energy" Foreground="White" FontSize="12"/>
                                 </StackPanel>
                             </Grid>
+                        </StackPanel>
+                    </Expander>
+
+                    <Expander x:Name="LogExpander" Header="Napló" Foreground="White" FontWeight="Bold" Margin="0,0,0,25" BorderBrush="#3e3e42" BorderThickness="1" Background="#2d2d30">
+                        <StackPanel Margin="10">
+
+
+                            <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="5">
+                                <TextBlock  x:Name="napló" Text="Még nincs itt semmi" Foreground="White" FontSize="12"/>
+                            </StackPanel>
+
+
                         </StackPanel>
                     </Expander>
 

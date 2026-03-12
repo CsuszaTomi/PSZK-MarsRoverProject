@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using PSZK_MarsRoverProject.Models;
 
 namespace PSZK_MarsRoverProject.Models
 {
@@ -63,6 +64,7 @@ namespace PSZK_MarsRoverProject.Models
         {
             BatteryLevel -= amount;
             AllBatteryUsage += amount;
+            StandByBatteryUsage += amount;
         }
 
         public void ChargeBattery(SimulationTime time)
