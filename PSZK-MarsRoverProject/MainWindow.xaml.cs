@@ -198,7 +198,7 @@ namespace PSZK_MarsRoverProject
         {
             TextBlock newLog = new TextBlock
             {
-                Text = $"[{Time.GetCurrentTimeString()}] koordináta: {rover.Xposition};{rover.Yposition} akkumulátor töltöttség: {rover.BatteryLevel} sebesség: {GetOptimalSpeed(activePath.Count)} megtett távolság: {log.DistanceTraveled} begyüjtött ásványok: {rover.CollectedMinerals},{message}",
+                Text = $"[{Time.GetCurrentTimeString()}] koordináta: {rover.Xposition};{rover.Yposition} akkumulátor töltöttség: {rover.BatteryLevel}\n sebesség: {GetOptimalSpeed(activePath.Count)} megtett távolság: {log.DistanceTraveled}\n begyüjtött ásványok: {rover.CollectedMinerals},{message}\n",
                 Foreground = Brushes.White,
                 FontSize = 12,
                 Margin = new Thickness(0, 0, 0, 5) // Egy kis térköz a sorok között
