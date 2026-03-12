@@ -16,6 +16,7 @@ namespace PSZK_MarsRoverProject.Models
         public float Speed3BatteryUsage { get; set; }
         public float Speed2BatteryUsage { get; set; }
         public float Speed1BatteryUsage { get; set; }
+        public float CollectedMinerals { get; set; }
         public float StandByBatteryUsage { get; set; }
         public float MiningBatteryUsage { get; set; }
         public float BatteryLevel { get; set; }
@@ -58,6 +59,7 @@ namespace PSZK_MarsRoverProject.Models
                 AllBatteryUsage += 2;
                 MiningBatteryUsage += 2;
             }
+            CollectedMinerals += 1;
         }
 
         public void DrainBattery(float amount)

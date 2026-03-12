@@ -98,12 +98,15 @@ namespace PSZK_MarsRoverProject
                     rover.Mine(Time);
                     rover.IsMining = false; // Befejezte a bányászatot (fél óra telt el)
                                             // A bányászat helyén a térkép újra üres lesz
+                    WriteToLog("Elkezdtem a bányászatot");
                     map[rover.Yposition, rover.Xposition] = ".";
                     if (gemImg[rover.Yposition, rover.Xposition] != null)
                     {
                         jatekter.Children.Remove(gemImg[rover.Yposition, rover.Xposition]);
                         gemImg[rover.Yposition, rover.Xposition] = null;
                     }
+
+                    WriteToLog("Befejeztem a bányászást");
                 }
                 else if (activePath != null && activePath.Count > 0)
                 {
@@ -111,6 +114,7 @@ namespace PSZK_MarsRoverProject
                     int desiredSpeed = GetOptimalSpeed(activePath.Count);
                     // Ha kevesebb lépés van hátra, mint a sebességünk, akkor csak annyit megyünk
                     rover.CurrentSpeed = Math.Min(desiredSpeed, activePath.Count);
+                    log.DistanceTraveled += rover.CurrentSpeed;
                     // Fogyasztás levonása a sebesség alapján (E = 2 * v^2)
                     rover.MovementEnergyConsumption();
                     // Lépések megtétele a listában
@@ -132,6 +136,7 @@ namespace PSZK_MarsRoverProject
                 {
                     //standby
                     rover.DrainBattery(1);
+                    WriteToLog("Vége van");
                     simTimer.Stop();
                 }
             }
@@ -185,10 +190,22 @@ namespace PSZK_MarsRoverProject
                                // A 3-as sebességet éjjel tiltjuk, hogy ne haljon meg gyorsan
                 }
             }
-            log.DistanceTraveled += Math.Min(speed, hatralevoLepesek);
 
             return Math.Min(speed, hatralevoLepesek);
         }
+
+        private void WriteToLog(string message)
+        {
+            TextBlock newLog = new TextBlock
+            {
+                Text = $"[{Time.GetCurrentTimeString()}] koordináta: {rover.Xposition};{rover.Yposition} akkumulátor töltöttség: {rover.BatteryLevel} sebesség: {GetOptimalSpeed(activePath.Count)} megtett távolság: {log.DistanceTraveled} begyüjtött ásványok: {rover.CollectedMinerals},{message}",
+                Foreground = Brushes.White,
+                FontSize = 12,
+                Margin = new Thickness(0, 0, 0, 5) // Egy kis térköz a sorok között
+            };
+            LogPanel.Children.Add(newLog);
+        }
+
 
         /// <summary>
         /// A rover pozíciójának frissítése a játéktéren, valamint a pozíció szövegének frissítése
