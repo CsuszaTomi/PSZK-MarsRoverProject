@@ -46,29 +46,29 @@ namespace PSZK_MarsRoverProject.Controllers
                 };
             while (q.Count > 0)
             {
-                Node curr = q.Dequeue();
+                Node currentTile = q.Dequeue();
                 //Cel ellenorzese
-                if (terkep[curr.X, curr.Y] == "G" || terkep[curr.X, curr.Y] == "Y" || terkep[curr.X, curr.Y] == "B")
+                if (terkep[currentTile.X, currentTile.Y] == "G" || terkep[currentTile.X, currentTile.Y] == "Y" || terkep[currentTile.X, currentTile.Y] == "B")
                 {
-                    return UtvonalOsszeallitasa(curr);
+                    return UtvonalOsszeallitasa(currentTile);
                 }
                 //szomszedok vizsgalata
                 for (int i = 0; i < directions.GetLength(0); i++)
                 {
-                    int szomszedX = curr.X + directions[i, 0];
-                    int szomszedY = curr.Y + directions[i, 1];
+                    int szomszedX = currentTile.X + directions[i, 0];
+                    int szomszedY = currentTile.Y + directions[i, 1];
                     if (szomszedX >= 0 && szomszedX < sor && szomszedY >= 0 && szomszedY < oszlop && terkep[szomszedX, szomszedY] != "#")
                     {
                         // KÖLTSÉG SZÁMÍTÁSA: 
                         // minden blokk 1 lépés.
                         // később energiafogyasztas
                         double koltseg = 1.0;
-                        double ujG = curr.G + koltseg;
+                        double ujG = currentTile.G + koltseg;//curr G + koltseg
                         if (ujG < eddigiKoltseg[szomszedX, szomszedY])
                         {
                             eddigiKoltseg[szomszedX, szomszedY] = ujG;
                             //curr lessz a szomszed szülője
-                            Node szomszed = new Node(szomszedX, szomszedY, ujG, 0, curr);
+                            Node szomszed = new Node(szomszedX, szomszedY, ujG, 0, currentTile);
                             q.Enqueue(szomszed, szomszed.F);
                         }
                     }

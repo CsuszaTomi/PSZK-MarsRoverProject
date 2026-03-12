@@ -39,6 +39,7 @@ namespace PSZK_MarsRoverProject
         public SimulationTime Time = new SimulationTime();
         List<int[]> activePath = null;
         bool gameOn = false;
+        bool gameStarted = false;
         public MainWindow()
         {
             InitializeComponent();
@@ -55,7 +56,6 @@ namespace PSZK_MarsRoverProject
             simTimer = new DispatcherTimer();
             simTimer.Interval = TimeSpan.FromSeconds(Time.TimeRate);
             simTimer.Tick += SimTimer_Tick;
-            simTimer.Start();
             map = MapController.CsvReader();
             //terkep[32, 34] = "R";
             MapController.FillUpGameSpace(this);
@@ -65,69 +65,72 @@ namespace PSZK_MarsRoverProject
         {
             //idolepes
             Time.AddTime();
-            //toltes
-            rover.ChargeBattery(Time);
-            //akciók végrehajtása
-            if (gameOn)
+            if(Time.CurrentTime.Minute == 30 || Time.CurrentTime.Minute == 0)
             {
-                // Ha a Rover épp nem bányászik, és nincs is hova mennie (üres az út),
-                // akkor itt az ideje, hogy az AI új célt keressen!
-                if (!rover.IsMining && (activePath == null || activePath.Count == 0))
+                //toltes
+                rover.ChargeBattery(Time);
+                //akciók végrehajtása
+                if (gameOn)
                 {
-                    activePath = RoverAI.LegkozelebbiGemKereses(map, rover);
-
-                    if (activePath != null && activePath.Count > 0)
+                    // Ha a Rover épp nem bányászik, és nincs is hova mennie (üres az út),
+                    // akkor itt az ideje, hogy az AI új célt keressen!
+                    if (!rover.IsMining && (activePath == null || activePath.Count == 0))
                     {
-                        var cel = activePath.Last();
-                        celPozicio.Text = $"Cél -> X: {cel[1]}, Y: {cel[0]}";
-                    }
-                    else
-                    {
-                        celPozicio.Text = "Nincs több elérhető ásvány!";
-                        gameOn = false; // Le is állíthatjuk a játékot, ha nincs több cél
-                    }
-                }
-            }
-            if (rover.IsMining)
-            {
-                // Bányászat végrehajtása
-                rover.Mine(Time);
-                rover.IsMining = false; // Befejezte a bányászatot (fél óra telt el)
-                // A bányászat helyén a térkép újra üres lesz
-                map[rover.Yposition, rover.Xposition] = ".";
-                if (gemImg[rover.Yposition, rover.Xposition] != null)
-                {
-                    jatekter.Children.Remove(gemImg[rover.Yposition, rover.Xposition]);
-                    gemImg[rover.Yposition, rover.Xposition] = null;
-                }
-            }
-            else if (activePath != null && activePath.Count > 0)
-            {
-                // Mozgás végrehajtása a meghatározott útvonalon
-                int desiredSpeed = GetOptimalSpeed(activePath.Count);
-                // Ha kevesebb lépés van hátra, mint a sebességünk, akkor csak annyit megyünk
-                rover.CurrentSpeed = Math.Min(desiredSpeed, activePath.Count);
-                // Fogyasztás levonása a sebesség alapján (E = 2 * v^2)
-                rover.MovementEnergyConsumption();
-                // Lépések megtétele a listában
-                for (int i = 0; i < rover.CurrentSpeed; i++)
-                {
-                    int[] nextStep = activePath[0];
-                    rover.Yposition = nextStep[0]; // Y a sor
-                    rover.Xposition = nextStep[1]; // X az oszlop
-                    activePath.RemoveAt(0);// Az első elemet eltávolítjuk, mert már odaértünk
-                }
+                        activePath = RoverAI.LegkozelebbiGemKereses(map, rover);
 
-                //utvege
-                if (activePath.Count == 0)
-                {
-                    rover.IsMining = true;
+                        if (activePath != null && activePath.Count > 0)
+                        {
+                            var cel = activePath.Last();
+                            celPozicio.Text = $"Cél -> X: {cel[1]}, Y: {cel[0]}";
+                        }
+                        else
+                        {
+                            celPozicio.Text = "Nincs több elérhető ásvány!";
+                            gameOn = false; // Le is állíthatjuk a játékot, ha nincs több cél
+                        }
+                    }
                 }
-            }
-            else
-            {
-                //standby
-                rover.DrainBattery(1);
+                if (rover.IsMining)
+                {
+                    // Bányászat végrehajtása
+                    rover.Mine(Time);
+                    rover.IsMining = false; // Befejezte a bányászatot (fél óra telt el)
+                                            // A bányászat helyén a térkép újra üres lesz
+                    map[rover.Yposition, rover.Xposition] = ".";
+                    if (gemImg[rover.Yposition, rover.Xposition] != null)
+                    {
+                        jatekter.Children.Remove(gemImg[rover.Yposition, rover.Xposition]);
+                        gemImg[rover.Yposition, rover.Xposition] = null;
+                    }
+                }
+                else if (activePath != null && activePath.Count > 0)
+                {
+                    // Mozgás végrehajtása a meghatározott útvonalon
+                    int desiredSpeed = GetOptimalSpeed(activePath.Count);
+                    // Ha kevesebb lépés van hátra, mint a sebességünk, akkor csak annyit megyünk
+                    rover.CurrentSpeed = Math.Min(desiredSpeed, activePath.Count);
+                    // Fogyasztás levonása a sebesség alapján (E = 2 * v^2)
+                    rover.MovementEnergyConsumption();
+                    // Lépések megtétele a listában
+                    for (int i = 0; i < rover.CurrentSpeed; i++)
+                    {
+                        int[] nextStep = activePath[0];
+                        rover.Yposition = nextStep[0]; // Y a sor
+                        rover.Xposition = nextStep[1]; // X az oszlop
+                        activePath.RemoveAt(0);// Az első elemet eltávolítjuk, mert már odaértünk
+                    }
+
+                    //utvege
+                    if (activePath.Count == 0)
+                    {
+                        rover.IsMining = true;
+                    }
+                }
+                else
+                {
+                    //standby
+                    rover.DrainBattery(1);
+                }
             }
 
             egysegnyiuzemanyag.Text = $"{rover.AllBatteryUsage.ToString()} egység";
@@ -256,6 +259,11 @@ namespace PSZK_MarsRoverProject
                     ido.Text = $"Idő: {Time.GetCurrentTimeString()}";
                     break;
                 case Key.E:
+                    if (!gameStarted)
+                    {
+                        simTimer.Start();
+                        gameStarted = true;
+                    }
                     gameOn = !gameOn;
                     break;
             }
@@ -265,13 +273,13 @@ namespace PSZK_MarsRoverProject
 
         private void BoostButton3_Click(object sender, RoutedEventArgs e)
         {
-            Time.TimeRate = 0.01;
+            Time.TimeRate = 0.0001;
             simTimer.Interval = TimeSpan.FromSeconds(Time.TimeRate);
         }
 
         private void BoostButton2_Click(object sender, RoutedEventArgs e)
         {
-            Time.TimeRate = 0.5;
+            Time.TimeRate = 0.01;
             simTimer.Interval = TimeSpan.FromSeconds(Time.TimeRate);
         }
 

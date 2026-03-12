@@ -23,7 +23,7 @@ namespace PSZK_MarsRoverProject.Models
         public void AddTime()
         {
             // 30 perc hozzáadása
-            TimeSpan step = TimeSpan.FromMinutes(30);
+            TimeSpan step = TimeSpan.FromMinutes(1);
             CurrentTime = CurrentTime.Add(step);
             // Növeljük az összesen eltöltött időt is
             TimeSpent = TimeSpent.Add(step);
