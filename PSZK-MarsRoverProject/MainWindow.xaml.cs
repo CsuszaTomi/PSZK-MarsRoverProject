@@ -97,14 +97,13 @@ namespace PSZK_MarsRoverProject
                     rover.Mine(Time);
                     rover.IsMining = false; // Befejezte a bányászatot (fél óra telt el)
                                             // A bányászat helyén a térkép újra üres lesz
-                    WriteToLog("Elkezdtem a bányászatot", 0);
                     map[rover.Yposition, rover.Xposition] = ".";
                     if (gemImg[rover.Yposition, rover.Xposition] != null)
                     {
                         jatekter.Children.Remove(gemImg[rover.Yposition, rover.Xposition]);
                         gemImg[rover.Yposition, rover.Xposition] = null;
                     }
-
+                    WriteToLog("Kibányásztam egy ásványt!", 0);
                 }
                 else if (activePath != null && activePath.Count > 0)
                 {
@@ -115,7 +114,7 @@ namespace PSZK_MarsRoverProject
                     log.DistanceTraveled += rover.CurrentSpeed;
                     // Fogyasztás levonása a sebesség alapján (E = 2 * v^2)
                     rover.MovementEnergyConsumption();
-                    WriteToLog("Elindultam", desiredSpeed);
+                    WriteToLog($"Megérkeztem a {rover.Xposition};{rover.Yposition} koordinátára", rover.CurrentSpeed);
                     // Lépések megtétele a listában
                     for (int i = 0; i < rover.CurrentSpeed; i++)
                     {
@@ -194,9 +193,15 @@ namespace PSZK_MarsRoverProject
 
         private void WriteToLog(string message, int speed)
         {
+            string logText =
+            $"[{Time.GetCurrentTimeString()}] {message}\n" +
+            $"  • Koordináta: {rover.Xposition};{rover.Yposition} | Akku: {rover.BatteryLevel}\n" +
+            $"  • Sebesség: {speed} | Távolság: {log.DistanceTraveled}\n" +
+            $"  • Begyűjtött ásványok: {rover.CollectedMinerals}";
+
             TextBlock newLog = new TextBlock
             {
-                Text = $"[{Time.GetCurrentTimeString()}] koordináta: {rover.Xposition};{rover.Yposition} akkumulátor töltöttség: {rover.BatteryLevel}\n sebesség: {speed} megtett távolság: {log.DistanceTraveled}\n begyüjtött ásványok: {rover.CollectedMinerals},{message}\n",
+                Text = logText,
                 Foreground = Brushes.White,
                 FontSize = 12,
                 Margin = new Thickness(0, 0, 0, 5)
