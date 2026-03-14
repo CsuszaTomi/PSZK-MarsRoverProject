@@ -49,9 +49,9 @@ namespace PSZK_MarsRoverProject.Models
         {
             if (time.IsDay)
             {
-                BatteryLevel += 8;
                 AllBatteryUsage += 2;
                 MiningBatteryUsage += 2;
+                Addbattery(8);
             }
             else
             {
@@ -69,28 +69,29 @@ namespace PSZK_MarsRoverProject.Models
             StandByBatteryUsage += amount;
         }
 
+        public void Addbattery(float amount)
+        {
+            if ((BatteryLevel += amount) > 100)
+            {
+                BatteryLevel = 100;
+            }
+            else
+            {
+                BatteryLevel += amount;
+            }
+        }
+
         public void ChargeBattery(SimulationTime time)
         {
             if (time.IsDay && CurrentSpeed != 3)
             {
                 IsCharging = true;
-                BatteryLevel += 10;
-
-                // Ne menjen 100 fölé
-                if (BatteryLevel > 100)
-                {
-                    BatteryLevel = 100;
-                }
+                Addbattery(10);
             }
             else if (time.IsDay && CurrentSpeed == 3)
             {
                 IsCharging = false;
-                BatteryLevel += 10;
-
-                if (BatteryLevel > 100)
-                {
-                    BatteryLevel = 100;
-                }
+                Addbattery(10);
             }
             else
             {

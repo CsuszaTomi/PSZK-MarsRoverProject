@@ -70,7 +70,6 @@ namespace PSZK_MarsRoverProject
             if(Time.CurrentTime.Minute == 30 || Time.CurrentTime.Minute == 0)
             {
                 //toltes
-                rover.ChargeBattery(Time);
                 //akciók végrehajtása
                 if (gameOn)
                 {
@@ -98,7 +97,7 @@ namespace PSZK_MarsRoverProject
                     rover.Mine(Time);
                     rover.IsMining = false; // Befejezte a bányászatot (fél óra telt el)
                                             // A bányászat helyén a térkép újra üres lesz
-                    WriteToLog("Elkezdtem a bányászatot");
+                    WriteToLog("Elkezdtem a bányászatot", 0);
                     map[rover.Yposition, rover.Xposition] = ".";
                     if (gemImg[rover.Yposition, rover.Xposition] != null)
                     {
@@ -106,7 +105,6 @@ namespace PSZK_MarsRoverProject
                         gemImg[rover.Yposition, rover.Xposition] = null;
                     }
 
-                    WriteToLog("Befejeztem a bányászást");
                 }
                 else if (activePath != null && activePath.Count > 0)
                 {
@@ -117,6 +115,7 @@ namespace PSZK_MarsRoverProject
                     log.DistanceTraveled += rover.CurrentSpeed;
                     // Fogyasztás levonása a sebesség alapján (E = 2 * v^2)
                     rover.MovementEnergyConsumption();
+                    WriteToLog("Elindultam", desiredSpeed);
                     // Lépések megtétele a listában
                     for (int i = 0; i < rover.CurrentSpeed; i++)
                     {
@@ -136,7 +135,6 @@ namespace PSZK_MarsRoverProject
                 {
                     //standby
                     rover.DrainBattery(1);
-                    WriteToLog("Vége van");
                     simTimer.Stop();
                 }
             }
@@ -146,6 +144,7 @@ namespace PSZK_MarsRoverProject
             EnergyBar.Value = rover.BatteryLevel;
             ido.Text = $"Idő: {Time.GetCurrentTimeString()} ({Time.CurrentDayProgression})";
             RefreshRoverPosition();
+            rover.ChargeBattery(Time);
 
             // Ellenőrizzük, hogy a rover lemerült-e
             if (rover.BatteryLevel <= 0)
@@ -187,23 +186,23 @@ namespace PSZK_MarsRoverProject
                 else
                 {
                     speed = 1; // Fogyasztás: 2 -> Nettó: -2
-                               // A 3-as sebességet éjjel tiltjuk, hogy ne haljon meg gyorsan
                 }
             }
 
             return Math.Min(speed, hatralevoLepesek);
         }
 
-        private void WriteToLog(string message)
+        private void WriteToLog(string message, int speed)
         {
             TextBlock newLog = new TextBlock
             {
-                Text = $"[{Time.GetCurrentTimeString()}] koordináta: {rover.Xposition};{rover.Yposition} akkumulátor töltöttség: {rover.BatteryLevel}\n sebesség: {GetOptimalSpeed(activePath.Count)} megtett távolság: {log.DistanceTraveled}\n begyüjtött ásványok: {rover.CollectedMinerals},{message}\n",
+                Text = $"[{Time.GetCurrentTimeString()}] koordináta: {rover.Xposition};{rover.Yposition} akkumulátor töltöttség: {rover.BatteryLevel}\n sebesség: {speed} megtett távolság: {log.DistanceTraveled}\n begyüjtött ásványok: {rover.CollectedMinerals},{message}\n",
                 Foreground = Brushes.White,
                 FontSize = 12,
-                Margin = new Thickness(0, 0, 0, 5) // Egy kis térköz a sorok között
+                Margin = new Thickness(0, 0, 0, 5)
             };
-            LogPanel.Children.Add(newLog);
+
+            LogPanel.Children.Insert(0, newLog);
         }
 
 
