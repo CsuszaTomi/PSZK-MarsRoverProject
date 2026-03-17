@@ -22,6 +22,31 @@
             </Canvas>
         </ScrollViewer>
 
+        <Grid Grid.Column="0" Margin="-25">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="0.3*" MinWidth="150" MaxWidth="300"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <Viewbox Grid.Row="0" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Top">
+
+                <StackPanel>
+                    <Grid Width="250" Height="250" ClipToBounds="True">
+                        <Image x:Name="SunImage" Source="pack://application:,,,/Images/sun.png" Margin="-65" Stretch="Uniform" Opacity="1"/>
+                        <Image x:Name="MoonImage" Source="pack://application:,,,/Images/moon.png" Margin="-65" Stretch="Uniform" Opacity="0"/>
+                    </Grid>
+
+                    <TextBlock x:Name="idoszak" Text="Nappal" Foreground="Black" FontSize="30" FontFamily="Segoe UI Black" HorizontalAlignment="Center" Margin="0,-55,0,0"/>
+                </StackPanel>
+
+            </Viewbox>
+        </Grid>
+
+
         <Border Grid.Column="1" Background="#252526" BorderBrush="#3e3e42" BorderThickness="2,0,0,0">
             <ScrollViewer VerticalScrollBarVisibility="Auto">
                 <StackPanel Margin="20">
@@ -120,19 +145,17 @@
                             </Grid>
                         </StackPanel>
                     </Expander>
+
                     <Expander x:Name="LogExpander" Header="Napló" Foreground="White" FontWeight="Bold" Margin="0,0,0,25" BorderBrush="#3e3e42" BorderThickness="1" Background="#2d2d30">
                         <ScrollViewer x:Name="LogScroll" Height="150" VerticalScrollBarVisibility="Auto">
-
                             <StackPanel x:Name="LogPanel" Margin="5">
                                 <TextBlock Text="A szimuláció elindult..." Foreground="#aaaaaa" FontSize="12" FontStyle="Italic" Margin="0,0,0,5"/>
                             </StackPanel>
-
                         </ScrollViewer>
                     </Expander>
 
                     <TextBlock Text="Sebesség / Gyorsítás" Foreground="#aaaaaa" FontSize="14" Margin="0,0,0,10" HorizontalAlignment="Center"/>
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-
                         <Button x:Name="BoostButton1" Click="BoostButton1_Click" Width="60" Height="60" Margin="5" Background="#333337" BorderBrush="#555" BorderThickness="1">
                             <Button.Resources>
                                 <Style TargetType="Border">
@@ -141,7 +164,6 @@
                             </Button.Resources>
                             <Image Source="pack://application:,,,/Images/speedupicon1x.png" Width="40" Height="40"/>
                         </Button>
-
                         <Button x:Name="BoostButton2" Click="BoostButton2_Click" Width="60" Height="60" Margin="5" Background="#333337" BorderBrush="#555" BorderThickness="1">
                             <Button.Resources>
                                 <Style TargetType="Border">
@@ -150,7 +172,6 @@
                             </Button.Resources>
                             <Image Source="pack://application:,,,/Images/speedupicon2x.png" Width="40" Height="40"/>
                         </Button>
-
                         <Button x:Name="BoostButton3" Click="BoostButton3_Click" Width="60" Height="60" Margin="5" Background="#333337" BorderBrush="#555" BorderThickness="1">
                             <Button.Resources>
                                 <Style TargetType="Border">

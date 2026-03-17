@@ -100,9 +100,9 @@ namespace PSZK_MarsRoverProject.Controllers
                 case "#":
                     return mw.obstacleImage;
                 case "G":
-                    return mw.gemimage;
+                    return mw.gemimage1;
                 case "Y":
-                    return mw.gemimage;
+                    return mw.gemimage2;
                 case "B":
                     return mw.gemimage;
                 default:

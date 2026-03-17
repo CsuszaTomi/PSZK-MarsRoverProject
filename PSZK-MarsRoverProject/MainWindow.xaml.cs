@@ -36,6 +36,8 @@ namespace PSZK_MarsRoverProject
         public BitmapImage groundImage6;
         public BitmapImage obstacleImage;
         public BitmapImage gemimage;
+        public BitmapImage gemimage1;
+        public BitmapImage gemimage2;
         public bool FollowRover;
         public const int tileSize = 80;
         public SimulationTime Time = new SimulationTime();
@@ -55,6 +57,8 @@ namespace PSZK_MarsRoverProject
             groundImage6 = new BitmapImage(new Uri("pack://application:,,,/Images/ground6.png"));
             obstacleImage = new BitmapImage(new Uri("pack://application:,,,/Images/obstacle2.png"));
             gemimage = new BitmapImage(new Uri("pack://application:,,,/Images/bluegem.png"));
+            gemimage1 = new BitmapImage(new Uri("pack://application:,,,/Images/zoldasvany.png"));
+            gemimage2 = new BitmapImage(new Uri("pack://application:,,,/Images/sargaasvany.png"));
             simTimer = new DispatcherTimer();
             simTimer.Interval = TimeSpan.FromSeconds(Time.TimeRate);
             simTimer.Tick += SimTimer_Tick;
@@ -67,7 +71,19 @@ namespace PSZK_MarsRoverProject
         {
             //idolepes
             Time.AddTime();
-            if(Time.CurrentTime.Minute == 30 || Time.CurrentTime.Minute == 0)
+            if (Time.IsDay)
+            {
+                SunImage.Opacity = 1;
+                MoonImage.Opacity = 0;
+                idoszak.Text = "Nappal";
+            }
+            else
+            {
+                SunImage.Opacity = 0;
+                MoonImage.Opacity = 1;
+                idoszak.Text = "Éjszaka";
+            }
+            if (Time.CurrentTime.Minute == 30 || Time.CurrentTime.Minute == 0)
             {
                 //toltes
                 //akciók végrehajtása
@@ -387,5 +403,6 @@ namespace PSZK_MarsRoverProject
                 StatisztikaExpander.IsExpanded = false;
             }
         }
+
     }
 }

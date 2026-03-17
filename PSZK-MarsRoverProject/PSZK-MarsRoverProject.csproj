@@ -58,15 +58,19 @@
     <None Remove="Images\kep58.png" />
     <None Remove="Images\kep59.png" />
     <None Remove="Images\kicsikocsi.png" />
+    <None Remove="Images\moon.png" />
     <None Remove="Images\obstacle2.png" />
     <None Remove="Images\obstacletroli.png" />
     <None Remove="Images\rover.png" />
+    <None Remove="Images\sargaasvany.png" />
     <None Remove="Images\speed up icon 1x.png" />
     <None Remove="Images\speed up icon 2x.png" />
     <None Remove="Images\speed up icon_3x.png" />
     <None Remove="Images\speedupicon1x.png" />
     <None Remove="Images\speedupicon2x.png" />
     <None Remove="Images\speedupicon3x.png" />
+    <None Remove="Images\sun.png" />
+    <None Remove="Images\zoldasvany.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -122,14 +126,18 @@
     <Resource Include="Images\kep58.png" />
     <Resource Include="Images\kep59.png" />
     <Resource Include="Images\kicsikocsi.png" />
+    <Resource Include="Images\moon.png" />
     <Resource Include="Images\obstacle2.png" />
     <Resource Include="Images\obstacletroli.png">
       <CopyToOutputDirectory></CopyToOutputDirectory>
     </Resource>
     <Resource Include="Images\rover.png" />
+    <Resource Include="Images\sargaasvany.png" />
     <Resource Include="Images\speedupicon1x.png" />
     <Resource Include="Images\speedupicon2x.png" />
     <Resource Include="Images\speedupicon3x.png" />
+    <Resource Include="Images\sun.png" />
+    <Resource Include="Images\zoldasvany.png" />
   </ItemGroup>
 
   <ItemGroup>
