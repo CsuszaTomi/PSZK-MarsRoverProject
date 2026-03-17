@@ -97,5 +97,79 @@ namespace PSZK_MarsRoverProject.Controllers
             utvonal.Reverse(); //start lessz elso
             return utvonal;
         }
+
+        /// <summary>
+        /// Kiszámítja az utat a rover aktuális pozíciójától a kezdőpontig (S).
+        /// </summary>
+        /// <param name="terkep">Az 50x50-es marsi felszín.</param>
+        /// <param name="rover">A rover aktuális pozíciója.</param>
+        /// <returns>A kezdőpontig vezető koordináták listája.</returns>
+        static public List<int[]> BackToSpawn(string[,] terkep, Rover rover)
+        {
+            // S helyének meghatározása a térképen
+            int[] spawnPos = MapController.GetSLocation(terkep);
+            if (spawnPos[0] == -1) 
+                return null; // Ha nincs S a pályán
+            int celX = spawnPos[0];
+            int celY = spawnPos[1];
+            int sor = terkep.GetLength(0);
+            int oszlop = terkep.GetLength(1);
+            // A* algoritmus használata a visszavezető útvonal megtalálásához
+            PriorityQueue<Node, double> q = new PriorityQueue<Node, double>();
+            double[,] eddigiKoltseg = new double[sor, oszlop];
+            for (int i = 0; i < sor; i++)
+            {
+                for (int j = 0; j < oszlop; j++)
+                {
+                    eddigiKoltseg[i, j] = double.MaxValue;
+                }
+            }
+            int startX = rover.Yposition;
+            int startY = rover.Xposition;
+            Node startNode = new Node(startX, startY, 0, 0);
+            q.Enqueue(startNode, startNode.F);
+            eddigiKoltseg[startX, startY] = 0;
+
+            int[,] directions = new int[,] {
+                { -1, 0 }, { 1, 0 }, { 0, -1 }, { 0, 1 },
+                { -1, -1 }, { -1, 1 }, { 1, -1 }, { 1, 1 }
+            };
+
+            while (q.Count > 0)
+            {
+                Node currentTile = q.Dequeue();
+
+                //megérkezés a célhoz ellenőrzése
+                if (currentTile.X == celX && currentTile.Y == celY)
+                {
+                    return UtvonalOsszeallitasa(currentTile);
+                }
+
+                for (int i = 0; i < directions.GetLength(0); i++)
+                {
+                    int szomszedX = currentTile.X + directions[i, 0];
+                    int szomszedY = currentTile.Y + directions[i, 1];
+
+                    if (szomszedX >= 0 && szomszedX < sor && szomszedY >= 0 && szomszedY < oszlop && terkep[szomszedX, szomszedY] != "#")
+                    {
+                        // Egyszerű távolság alapú költség (1 lépés = 1 egység)
+                        double ujG = currentTile.G + 1.0;
+
+                        if (ujG < eddigiKoltseg[szomszedX, szomszedY])
+                        {
+                            eddigiKoltseg[szomszedX, szomszedY] = ujG;
+
+                            // Heurisztika (H): légvonalbeli távolság a célig (S-ig)
+                            double h = Math.Sqrt(Math.Pow(celX - szomszedX, 2) + Math.Pow(celY - szomszedY, 2));
+
+                            Node szomszed = new Node(szomszedX, szomszedY, ujG, h, currentTile);
+                            q.Enqueue(szomszed, szomszed.F);
+                        }
+                    }
+                }
+            }
+
+            return null; // Nincs útvonal
+        }
     }
 }

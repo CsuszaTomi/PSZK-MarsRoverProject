@@ -33,6 +33,21 @@ namespace PSZK_MarsRoverProject.Controllers
             return map;
         }
 
+        public static int[] GetSLocation(string[,] map)
+        {
+                for (int i = 0; i < map.GetLength(0); i++)
+                {
+                    for (int j = 0; j < map.GetLength(1); j++)
+                    {
+                        if (map[i, j] == "S")
+                        {
+                            return new int[] { i, j };
+                        }
+                    }
+                }
+                return new int[] { -1, -1 }; // Ha nem találjuk meg az S-t, visszatérünk egy érvénytelen helyzettel
+        }
+
         public static void FillUpGameSpace(MainWindow mw)
         {
             for (int i = 0; i < mw.map.GetLength(0); i++)
