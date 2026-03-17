@@ -41,14 +41,16 @@ namespace PSZK_MarsRoverProject
         public SimulationTime Time = new SimulationTime();
         List<int[]> activePath = null;
         bool gameOn = false;
+        bool BackToSpawn = false;
         bool gameStarted = false;
+        int[] sPosition = new int[2];
         public MainWindow()
         {
             InitializeComponent();
             Time.SetTime(8, 0);
             map = MapController.CsvReader();
-            int[] sPosition = MapController.GetSLocation(map);
-            rover = new Rover() { Xposition = sPosition[0], Yposition = sPosition[1], BatteryLevel = 100, IsCharging = true };
+            sPosition = MapController.GetSLocation(map);
+            rover = new Rover() { Xposition = sPosition[1], Yposition = sPosition[0], BatteryLevel = 100, IsCharging = true };
             groundImage1 = new BitmapImage(new Uri("pack://application:,,,/Images/ground1.png"));
             groundImage2 = new BitmapImage(new Uri("pack://application:,,,/Images/ground2.png"));
             groundImage3 = new BitmapImage(new Uri("pack://application:,,,/Images/ground3.png"));
@@ -89,7 +91,7 @@ namespace PSZK_MarsRoverProject
                         else
                         {
                             celPozicio.Text = "Nincs több elérhető ásvány!";
-                            gameOn = false; // Le is állíthatjuk a játékot, ha nincs több cél
+                            BackToSpawn = true; // Le is állíthatjuk a játékot, ha nincs több cél
                         }
                     }
                 }
@@ -132,11 +134,44 @@ namespace PSZK_MarsRoverProject
                         rover.IsMining = true;
                     }
                 }
+                else if (BackToSpawn)
+                {
+                    if (rover.Yposition == sPosition[0] && rover.Xposition == sPosition[1])
+                    {
+                        gameOn = false;
+                        simTimer.Stop();
+                        WriteToLog("Visszaértem a kiindulási pontra és a küldetés véget ért!", 0);
+                        return;
+                    }
+                    else if (activePath == null || activePath.Count == 0)
+                    {
+                        activePath = RoverAI.BackToSpawn(map, rover);
+
+                        if (activePath != null && activePath.Count > 0)
+                        {
+                            int desiredSpeed = GetOptimalSpeed(activePath.Count);
+                            rover.CurrentSpeed = Math.Min(desiredSpeed, activePath.Count);
+                            log.DistanceTraveled += rover.CurrentSpeed;
+                            rover.MovementEnergyConsumption();
+
+                            for (int i = 0; i < rover.CurrentSpeed; i++)
+                            {
+                                if (activePath.Count > 0)
+                                {
+                                    int[] nextStep = activePath[0];
+                                    rover.Yposition = nextStep[0]; // Sor
+                                    rover.Xposition = nextStep[1]; // Oszlop
+                                    activePath.RemoveAt(0);
+                                }
+                            }
+                            WriteToLog($"Hazafelé tartok... Pozíció: {rover.Xposition};{rover.Yposition}", rover.CurrentSpeed);
+                        }
+                    }
+                }
                 else
                 {
                     //standby
                     rover.DrainBattery(1);
-                    simTimer.Stop();
                 }
                 rover.ChargeBattery(Time);
             }
@@ -295,8 +330,6 @@ namespace PSZK_MarsRoverProject
 
             SliceStandby.Data = Geometry.Parse(DrawPieSlice(70, currentAngle, a5));
         }
-
-
 
         private void Window_KeyDown(object sender, KeyEventArgs e)
         {
