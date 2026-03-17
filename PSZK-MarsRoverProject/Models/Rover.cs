@@ -47,18 +47,9 @@ namespace PSZK_MarsRoverProject.Models
 
         public void Mine(SimulationTime time)
         {
-            if (time.IsDay)
-            {
-                AllBatteryUsage += 2;
-                MiningBatteryUsage += 2;
-                Addbattery(8);
-            }
-            else
-            {
-                BatteryLevel -= 2;
-                AllBatteryUsage += 2;
-                MiningBatteryUsage += 2;
-            }
+            BatteryLevel -= 2;
+            AllBatteryUsage += 2;
+            MiningBatteryUsage += 2;
             CollectedMinerals += 1;
         }
 
@@ -83,19 +74,13 @@ namespace PSZK_MarsRoverProject.Models
 
         public void ChargeBattery(SimulationTime time)
         {
-            if (time.IsDay && CurrentSpeed != 3)
+            if (time.IsDay)
             {
                 IsCharging = true;
                 Addbattery(10);
             }
-            else if (time.IsDay && CurrentSpeed == 3)
-            {
-                IsCharging = false;
-                Addbattery(10);
-            }
             else
             {
-                // Éjszaka nincs töltés
                 IsCharging = false;
             }
         }
