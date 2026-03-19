@@ -144,6 +144,7 @@ namespace PSZK_MarsRoverProject
                 {
                     // Bányászat végrehajtása
                     rover.Mine(Time);
+                    asvanycounter.Text = $"Kibányászot ásványok: {rover.CollectedMinerals}";
                     // Bányászat után a cella kiürül, a rover pedig készen áll a következő célpont keresésére
                     rover.IsMining = false;
                     map[rover.Yposition, rover.Xposition] = ".";
@@ -152,7 +153,7 @@ namespace PSZK_MarsRoverProject
                         jatekter.Children.Remove(gemImg[rover.Yposition, rover.Xposition]);
                         gemImg[rover.Yposition, rover.Xposition] = null;
                     }
-                    WriteToLog("Kibányásztam egy ásványt!", 0);
+                    WriteToLog($"Kibányásztam egy ásványt a {rover.Xposition};{rover.Yposition} koordinátán!", 0);
                 }
                 else if (activePath != null && activePath.Count > 0)
                 {
@@ -219,9 +220,12 @@ namespace PSZK_MarsRoverProject
                     rover.DrainBattery(1);
                 }
                 rover.ChargeBattery(Time);
+                IsChargingindicator.Visibility = rover.IsCharging ? Visibility.Visible : Visibility.Collapsed;
+                IsntChargingindicator.Visibility = rover.IsCharging ? Visibility.Collapsed : Visibility.Visible;
             }
 
             egysegnyiuzemanyag.Text = $"{rover.AllBatteryUsage.ToString()} egység";
+            osszlepes.Text = $"Megtett összlépés: {log.DistanceTraveled}";
             UpdateChart();
             EnergyBar.Value = rover.BatteryLevel;
             ido.Text = $"Idő: {Time.GetCurrentTimeString()} ({Time.CurrentDayProgression})";
@@ -278,7 +282,7 @@ namespace PSZK_MarsRoverProject
         {
             string logText =
             $"[{Time.GetCurrentTimeString()}] {message}\n" +
-            $"  • Koordináta: {rover.Xposition};{rover.Yposition} | Akku: {rover.BatteryLevel}\n" +
+            $"  • Akku: {rover.BatteryLevel}\n" +
             $"  • Sebesség: {speed} | Távolság: {log.DistanceTraveled}\n" +
             $"  • Begyűjtött ásványok: {rover.CollectedMinerals}";
 
