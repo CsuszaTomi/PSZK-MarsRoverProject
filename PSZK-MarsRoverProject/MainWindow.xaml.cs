@@ -289,6 +289,11 @@ namespace PSZK_MarsRoverProject
             egysegnyiuzemanyag.Text = $"{rover.AllBatteryUsage.ToString()} egység";
             osszlepes.Text = $"Megtett összlépés: {log.DistanceTraveled}";
             UpdateChart();
+            egyblokk.Text = $"Lassú (2 egység/fél óra) {rover.Speed1BatteryUsage} energia elhasználva.";
+            kettőblokk.Text = $"Normál (8 egység/fél óra) {rover.Speed2BatteryUsage} energia elhasználva.";
+            háromblokk.Text = $"Gyors (18 egység/fél óra) {rover.Speed3BatteryUsage} energia elhasználva.";
+            miningenergy.Text = $"Bányászás (2 egység/fél óra) {rover.MiningBatteryUsage} energia elhasználva.";
+            standybyenergy.Text = $"StandBy (1 egység/fél óra) {rover.StandByBatteryUsage} energia elhasználva.";
             EnergyBar.Value = rover.BatteryLevel;
             ido.Text = $"Idő: {Time.GetCurrentTimeString()} ({Time.CurrentDayProgression})";
             RefreshRoverPosition();
