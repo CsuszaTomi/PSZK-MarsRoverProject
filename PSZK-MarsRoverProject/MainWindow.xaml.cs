@@ -84,14 +84,27 @@ namespace PSZK_MarsRoverProject
 
         private void StartBtn_Click(object sender, RoutedEventArgs e)
         {
-            if (!gameStarted)
+            try
             {
-                gameStarted = true;
-                gameOn = true;
-                simTimer.Start();
-                missionLength = int.Parse(DurationInput.Text);
-                maxMinutes = missionLength * 60;
-                WriteToLog("A küldetés elindult...", 0);
+                if (!gameStarted)
+                {
+                    int hours = int.Parse(DurationInput.Text);
+                    if (hours < 25)
+                    {
+                        MessageBox.Show("Kérem, adjon meg egy 24-nél számot a küldetés hosszára órában!");
+                        return;
+                    }
+                    gameStarted = true;
+                    gameOn = true;
+                    simTimer.Start();
+                    missionLength = hours;
+                    maxMinutes = missionLength * 60;
+                    WriteToLog("A küldetés elindult...", 0);
+                }
+            }
+            catch (FormatException)
+            {
+                MessageBox.Show("Kérem, érvényes számot adjon meg a küldetés hosszára percben!");
             }
         }
         private void SimTimer_Tick(object sender, EventArgs e)
@@ -536,8 +549,5 @@ namespace PSZK_MarsRoverProject
                 StatisztikaExpander.IsExpanded = false;
             }
         }
-
-
-
     }
 }
