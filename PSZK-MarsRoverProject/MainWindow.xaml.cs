@@ -61,7 +61,7 @@ namespace PSZK_MarsRoverProject
             //groundImage4 = new BitmapImage(new Uri("pack://application:,,,/Images/ground4.png"));
             groundImage5 = new BitmapImage(new Uri("pack://application:,,,/Images/ground5.png"));
             groundImage6 = new BitmapImage(new Uri("pack://application:,,,/Images/ground6.png"));
-            obstacleImage = new BitmapImage(new Uri("pack://application:,,,/Images/obstacle2.png"));
+            obstacleImage = new BitmapImage(new Uri("pack://application:,,,/Images/obst4.png"));
             gemimage = new BitmapImage(new Uri("pack://application:,,,/Images/bluegem.png"));
             gemimage1 = new BitmapImage(new Uri("pack://application:,,,/Images/zoldasvany.png"));
             gemimage2 = new BitmapImage(new Uri("pack://application:,,,/Images/sargaasvany.png"));
