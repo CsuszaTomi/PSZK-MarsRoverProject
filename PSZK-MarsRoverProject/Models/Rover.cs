@@ -10,8 +10,8 @@ namespace PSZK_MarsRoverProject.Models
     internal class Rover
     {
         public Rover() { }
-        public double Xposition { get; set; }
-        public double Yposition { get; set; }
+        public int Xposition { get; set; }
+        public int Yposition { get; set; }
         public float AllBatteryUsage { get; set; }
         public float Speed3BatteryUsage { get; set; }
         public float Speed2BatteryUsage { get; set; }
@@ -30,7 +30,7 @@ namespace PSZK_MarsRoverProject.Models
         {
             float usedEnergy = 2 * (CurrentSpeed*CurrentSpeed);
             if (CurrentSpeed == 3)
-            {
+            {   
                 Speed3BatteryUsage += usedEnergy;
             }
             else if (CurrentSpeed == 2)
@@ -62,13 +62,10 @@ namespace PSZK_MarsRoverProject.Models
 
         public void Addbattery(float amount)
         {
-            if ((BatteryLevel += amount) > 100)
+            BatteryLevel += amount;
+            if (BatteryLevel > 100) 
             {
                 BatteryLevel = 100;
-            }
-            else
-            {
-                BatteryLevel += amount;
             }
         }
 
