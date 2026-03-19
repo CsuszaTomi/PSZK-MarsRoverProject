@@ -46,6 +46,8 @@ namespace PSZK_MarsRoverProject
         bool BackToSpawn = false;
         bool gameStarted = false;
         int[] sPosition = new int[2];
+        public int missionLength = 48;
+        public int maxMinutes = 2880;
         public MainWindow()
         {
             InitializeComponent();
@@ -66,7 +68,6 @@ namespace PSZK_MarsRoverProject
             simTimer = new DispatcherTimer();
             simTimer.Interval = TimeSpan.FromSeconds(Time.TimeRate);
             simTimer.Tick += SimTimer_Tick;
-
             //terkep[32, 34] = "R";
             MapController.FillUpGameSpace(this);
         }
@@ -75,6 +76,17 @@ namespace PSZK_MarsRoverProject
         {
             //idolepes
             Time.AddTime();
+            Time.RemainingMissionTimeChange(this);
+            //Visszaszámlálás a küldetés végéig
+            double passedMinutes = Time.TimeSpent.TotalMinutes;
+            double remainingMinutes = maxMinutes - passedMinutes;
+            int requiredMinutes = RoverAI.HazautIdoIgenyPercben(map, rover);
+            if (remainingMinutes <= requiredMinutes && !BackToSpawn)
+            {
+                BackToSpawn = true;
+                activePath = null;
+                WriteToLog("Visszatérés a bázisra.", 0);
+            }
             if (Time.IsDay)
             {
                 SunImage.Opacity = 1;
@@ -89,16 +101,33 @@ namespace PSZK_MarsRoverProject
             }
             if (Time.CurrentTime.Minute == 30 || Time.CurrentTime.Minute == 0)
             {
-                //toltes
                 //akciók végrehajtása
                 if (gameOn)
                 {
-                    // Ha a Rover épp nem bányászik, és nincs is hova mennie (üres az út),
-                    // akkor itt az ideje, hogy az AI új célt keressen!
                     if (!rover.IsMining && (activePath == null || activePath.Count == 0))
                     {
-                        activePath = RoverAI.LegkozelebbiGemKereses(map, rover);
+                        if (BackToSpawn)
+                        {
+                            // Ha hazaértünk
+                            if (rover.Yposition == sPosition[0] && rover.Xposition == sPosition[1])
+                            {
+                                gameOn = false;
+                                simTimer.Stop();
+                                WriteToLog("KÜLDETÉS SIKERES! A rover visszaért.", 0);
+                                return;
+                            }
+                            // Ha még úton vagyunk hazafelé
+                            activePath = RoverAI.BackToSpawn(map, rover);
+                        }
+                        else
+                        {
+                            activePath = RoverAI.LegkozelebbiGemKereses(map, rover);
 
+                            if (activePath == null)
+                            {
+                                BackToSpawn = true;
+                            }
+                        }
                         if (activePath != null && activePath.Count > 0)
                         {
                             var cel = activePath.Last();
@@ -107,7 +136,7 @@ namespace PSZK_MarsRoverProject
                         else
                         {
                             celPozicio.Text = "Nincs több elérhető ásvány!";
-                            BackToSpawn = true; // Le is állíthatjuk a játékot, ha nincs több cél
+                            BackToSpawn = true;
                         }
                     }
                 }
