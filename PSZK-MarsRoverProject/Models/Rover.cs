@@ -10,8 +10,8 @@ namespace PSZK_MarsRoverProject.Models
     internal class Rover
     {
         public Rover() { }
-        public int Xposition { get; set; }
-        public int Yposition { get; set; }
+        public double Xposition { get; set; }
+        public double Yposition { get; set; }
         public float AllBatteryUsage { get; set; }
         public float Speed3BatteryUsage { get; set; }
         public float Speed2BatteryUsage { get; set; }

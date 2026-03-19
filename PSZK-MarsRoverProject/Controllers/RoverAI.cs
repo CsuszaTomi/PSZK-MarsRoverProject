@@ -33,8 +33,8 @@ namespace PSZK_MarsRoverProject.Controllers
                     eddigiKoltseg[i, j] = double.MaxValue;
                 }
             }
-            int startX = rover.Yposition;
-            int startY = rover.Xposition;
+            int startX = (int)rover.Yposition;
+            int startY = (int)rover.Xposition;
             //Kiinduló pont hozzáadása a prioritási sorhoz
             Node startNode = new Node(startX, startY, 0, 0);
             q.Enqueue(startNode, startNode.F);
@@ -124,8 +124,8 @@ namespace PSZK_MarsRoverProject.Controllers
                     eddigiKoltseg[i, j] = double.MaxValue;
                 }
             }
-            int startX = rover.Yposition;
-            int startY = rover.Xposition;
+            int startX = (int)rover.Yposition;
+            int startY = (int)rover.Xposition;
             Node startNode = new Node(startX, startY, 0, 0);
             q.Enqueue(startNode, startNode.F);
             eddigiKoltseg[startX, startY] = 0;
