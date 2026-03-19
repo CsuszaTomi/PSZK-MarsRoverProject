@@ -103,6 +103,8 @@ namespace PSZK_MarsRoverProject.Controllers
             mw.jatekter.Children.Add(mw.roverImg);
         }
 
+
+        private static readonly Random rnd = new Random();
         /// <summary>
         /// A megadott karakter alapján visszaadja a megfelelő képet a játéktérhez
         /// </summary>
@@ -110,10 +112,17 @@ namespace PSZK_MarsRoverProject.Controllers
         /// <returns>A megfelelő ImageSource</returns>
         public static ImageSource GetOtherImageSource(string karakter, MainWindow mw)
         {
+            int szam = rnd.Next(1, 3);
             switch (karakter)
             {
                 case "#":
-                    return mw.obstacleImage;
+                    switch (szam)
+                    {
+                        case 1: return mw.obstacleImage;
+                        case 2: return mw.obstacleImage2;
+                        case 3: return mw.obstacleImage3;
+                        default: return mw.obstacleImage;
+                    }
                 case "G":
                     return mw.gemimage1;
                 case "Y":
@@ -125,22 +134,24 @@ namespace PSZK_MarsRoverProject.Controllers
             }
         }
 
-
         /// <summary>
         /// Random módon választ egy talajképet a rendelkezésre álló 7 közül, hogy változatosabbá tegye a játéktér megjelenését
         /// </summary>
         /// <returns></returns>
         public static ImageSource GetGroundImageSource(MainWindow mw)
         {
-            Random rnd = new Random();
-            int szam = rnd.Next(1, 10); // 1-től 7-ig
-            if (szam == 1) return mw.groundImage1;
-            if (szam == 2) return mw.groundImage2;
-            if (szam == 3) return mw.groundImage3;
-            //if (szam == 4) return mw.groundImage4;
-            if (szam == 4) return mw.groundImage5;
-            if (szam == 5) return mw.groundImage6;
-            else return mw.groundImage1;
+            // Ha 6-féle talajképed van (groundImage1-6), akkor Next(1, 7) kell
+            int szam = rnd.Next(1, 7);
+
+            switch (szam)
+            {
+                case 1: return mw.groundImage1;
+                case 2: return mw.groundImage2;
+                case 3: return mw.groundImage3;
+                case 4: return mw.groundImage5;
+                case 5: return mw.groundImage6;
+                default: return mw.groundImage1;
+            }
         }
     }
 }
