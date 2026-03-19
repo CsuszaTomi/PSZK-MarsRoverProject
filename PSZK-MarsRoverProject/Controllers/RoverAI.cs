@@ -172,14 +172,25 @@ namespace PSZK_MarsRoverProject.Controllers
             return null; // Nincs útvonal
         }
 
+        //public static int HazautIdoIgenyPercben(string[,] terkep, Rover rover)
+        //{
+        //    var utvonal = BackToSpawn(terkep, rover);
+        //    if (utvonal == null) 
+        //        return 0;
+        //    int lepesek = utvonal.Count;
+        //    int percPerLepes = 30;
+        //    return (lepesek * percPerLepes);
+        //}
+
         public static int HazautIdoIgenyPercben(string[,] terkep, Rover rover)
         {
             var utvonal = BackToSpawn(terkep, rover);
-            if (utvonal == null) 
+            if (utvonal == null)
                 return 0;
+
             int lepesek = utvonal.Count;
-            int percPerLepes = 30;
-            return (lepesek * percPerLepes);
+            int alapSzuksegesPerc = lepesek * 17;
+            return alapSzuksegesPerc + 60;
         }
     }
 }

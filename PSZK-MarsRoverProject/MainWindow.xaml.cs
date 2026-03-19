@@ -96,6 +96,17 @@ namespace PSZK_MarsRoverProject
         }
         private void SimTimer_Tick(object sender, EventArgs e)
         {
+            if(Time.MissionEndTime.Minute != 0)
+            {
+                if(rover.Yposition == sPosition[0] && rover.Xposition == sPosition[1])
+                {
+                    MessageBox.Show($"Siker");
+                }
+                else
+                {
+                    MessageBox.Show($"A rover pozija x{rover.Xposition} és y{rover.Yposition}, {missionLength}");
+                }
+            }
             //idolepes
             Time.AddTime();
             Time.RemainingMissionTimeChange(this);
@@ -357,32 +368,11 @@ namespace PSZK_MarsRoverProject
             // Itt a logikai rover.Xposition helyett a folyamatosan változó visualX-et használjuk!
             Canvas.SetLeft(roverImg, visualX * tileSize);
             Canvas.SetTop(roverImg, visualY * tileSize);
-            txtPos.Text = $"X: {(int)rover.Xposition}, Y: {(int)rover.Yposition}";
+            txtPos.Text = $"X: {rover.Xposition}, Y: {rover.Yposition}";
             if (FollowRoverBox.IsChecked == true)
             {
                 kamera.ScrollToVerticalOffset(visualY * tileSize - (kamera.ActualHeight / 2));
                 kamera.ScrollToHorizontalOffset(visualX * tileSize - (kamera.ActualWidth / 2));
-            }
-        }
-
-        public void SetRoverPosition(int[] ToGo)
-        {
-            Canvas.SetLeft(roverImg, rover.Xposition * tileSize);
-            Canvas.SetTop(roverImg, rover.Yposition * tileSize);
-            txtPos.Text = $"X: {rover.Xposition}, Y: {rover.Yposition}";
-            //(rover.Xposition != ToGo[1] || rover.Yposition != ToGo[0])
-            for(int i = 0; i < 10; i++)
-            {
-                if (rover.Xposition < ToGo[1]) 
-                    rover.Xposition += 0.1;
-                else if (rover.Xposition > ToGo[1]) 
-                    rover.Xposition -= 0.1;
-                if (rover.Yposition < ToGo[0]) 
-                    rover.Yposition += 1;
-                else if (rover.Yposition > ToGo[0]) 
-                    rover.Yposition -= 0.1;
-                Canvas.SetLeft(roverImg, rover.Xposition * tileSize);
-                Canvas.SetTop(roverImg, rover.Yposition * tileSize);
             }
         }
 
@@ -486,14 +476,14 @@ namespace PSZK_MarsRoverProject
                     if (rover.Xposition > 0) rover.Xposition++;
                     break;
                 case Key.Q:
-                    string aktualisCella = map[(int)rover.Yposition, (int)rover.Xposition];
+                    string aktualisCella = map[rover.Yposition, rover.Xposition];
                     if (aktualisCella == "G" || aktualisCella == "Y" || aktualisCella == "B")
                     {
-                        map[(int)rover.Yposition, (int)rover.Xposition] = ".";
-                        if (gemImg[(int)rover.Yposition, (int)rover.Xposition] != null)
+                        map[rover.Yposition, rover.Xposition] = ".";
+                        if (gemImg[rover.Yposition, rover.Xposition] != null)
                         {
-                            jatekter.Children.Remove(gemImg[(int)rover.Yposition, (int)rover.Xposition]);
-                            gemImg[(int)rover.Yposition, (int)rover.Xposition] = null;
+                            jatekter.Children.Remove(gemImg[rover.Yposition, rover.Xposition]);
+                            gemImg[rover.Yposition, rover.Xposition] = null;
                         }
                     }
                     break;
