@@ -54,6 +54,18 @@
                     <TextBlock Text="ROVER ÁLLAPOT" Foreground="#ff9d00" FontSize="22" FontFamily="Segoe UI Black" HorizontalAlignment="Center" Margin="0,0,0,15"/>
                     <Separator Background="#3e3e42" Margin="0,0,0,20"/>
 
+                    <StackPanel Margin="0,0,0,20">
+                        <TextBlock Text="Szimuláció időtartama (óra):" Foreground="#aaaaaa" FontSize="12" Margin="0,0,0,5"/>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <TextBox x:Name="DurationInput" Text="60" FontSize="16" Padding="5" Background="#1e1e1e" Foreground="White" BorderBrush="#444" CaretBrush="White" VerticalContentAlignment="Center"/>
+                            <Button x:Name="StartBtn" Content="INDÍTÁS" Grid.Column="1" Margin="8,0,0,0" Padding="12,5" Background="#C1440E" Foreground="White" FontWeight="Bold" BorderThickness="0" Click="StartBtn_Click"/>
+                        </Grid>
+                    </StackPanel>
+
                     <Grid Margin="0,0,0,20">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto"/>
@@ -66,17 +78,17 @@
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
 
-                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Hátralévő idő:" Foreground="#aaaaaa" FontSize="14" Margin="0,0,10,10"/>
-                        <TextBlock Grid.Row="0" Grid.Column="1" x:Name="hatralevoido" Text="00:00:00" Foreground="White" FontSize="15" FontWeight="Bold" HorizontalAlignment="Right"/>
+                        <TextBlock Grid.Row="0" Text="Hátralévő idő:" Foreground="#aaaaaa" Margin="0,0,10,8"/>
+                        <TextBlock Grid.Row="0" Grid.Column="1" x:Name="hatralevoido" Text="00:00:00" Foreground="White" FontWeight="Bold" HorizontalAlignment="Right"/>
 
-                        <TextBlock Grid.Row="1" Grid.Column="0" Text="Marsi idő:" Foreground="#aaaaaa" FontSize="14" Margin="0,0,10,10"/>
-                        <TextBlock Grid.Row="1" Grid.Column="1" x:Name="ido" Text="00:00:00" Foreground="White" FontSize="15" FontWeight="Bold" HorizontalAlignment="Right"/>
+                        <TextBlock Grid.Row="1" Text="Marsi idő:" Foreground="#aaaaaa" Margin="0,0,10,8"/>
+                        <TextBlock Grid.Row="1" Grid.Column="1" x:Name="ido" Text="00:00:00" Foreground="White" FontWeight="Bold" HorizontalAlignment="Right"/>
 
-                        <TextBlock Grid.Row="2" Grid.Column="0" Text="Jelenlegi pozíció:" Foreground="#aaaaaa" FontSize="14" Margin="0,0,10,10"/>
-                        <TextBlock Grid.Row="2" Grid.Column="1" x:Name="txtPos" Text="X: 0 | Y: 0" Foreground="#4da6ff" FontSize="15" FontWeight="Bold" HorizontalAlignment="Right"/>
+                        <TextBlock Grid.Row="2" Text="Pozíció:" Foreground="#aaaaaa" Margin="0,0,10,8"/>
+                        <TextBlock Grid.Row="2" Grid.Column="1" x:Name="txtPos" Text="X: 0 | Y: 0" Foreground="#4da6ff" FontWeight="Bold" HorizontalAlignment="Right"/>
 
-                        <TextBlock Grid.Row="3" Grid.Column="0" Text="Cél koordináta:" Foreground="#aaaaaa" FontSize="14" Margin="0,0,10,0"/>
-                        <TextBlock Grid.Row="3" Grid.Column="1" x:Name="celPozicio" Text="X: 0 | Y: 0" Foreground="#ff4d4d" FontSize="15" FontWeight="Bold" HorizontalAlignment="Right"/>
+                        <TextBlock Grid.Row="3" Text="Cél:" Foreground="#aaaaaa" Margin="0,0,10,0"/>
+                        <TextBlock Grid.Row="3" Grid.Column="1" x:Name="celPozicio" Text="X: 0 | Y: 0" Foreground="#ff4d4d" FontWeight="Bold" HorizontalAlignment="Right"/>
                     </Grid>
 
                     <CheckBox x:Name="FollowRoverBox" IsChecked="True" Foreground="White" FontSize="15" FontWeight="SemiBold" Margin="0,0,0,25" HorizontalAlignment="Center" VerticalAlignment="Center" VerticalContentAlignment="Center">

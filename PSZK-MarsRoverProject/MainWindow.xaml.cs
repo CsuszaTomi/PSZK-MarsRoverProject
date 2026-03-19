@@ -72,6 +72,18 @@ namespace PSZK_MarsRoverProject
             MapController.FillUpGameSpace(this);
         }
 
+        private void StartBtn_Click(object sender, RoutedEventArgs e)
+        {
+            if (!gameStarted)
+            {
+                gameStarted = true;
+                gameOn = true;
+                simTimer.Start();
+                missionLength = int.Parse(DurationInput.Text);
+                maxMinutes = missionLength * 60;
+                WriteToLog("A küldetés elindult...", 0);
+            }
+        }
         private void SimTimer_Tick(object sender, EventArgs e)
         {
             //idolepes
@@ -468,6 +480,8 @@ namespace PSZK_MarsRoverProject
                 StatisztikaExpander.IsExpanded = false;
             }
         }
+
+
 
     }
 }
