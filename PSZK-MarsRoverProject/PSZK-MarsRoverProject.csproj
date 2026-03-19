@@ -134,7 +134,6 @@
     <Resource Include="Images\obst1.png" />
     <Resource Include="Images\obst2.png" />
     <Resource Include="Images\obst3.png" />
-    <Resource Include="Images\obst4.png" />
     <Resource Include="Images\obstacle2.png" />
     <Resource Include="Images\obstacletroli.png">
       <CopyToOutputDirectory></CopyToOutputDirectory>
