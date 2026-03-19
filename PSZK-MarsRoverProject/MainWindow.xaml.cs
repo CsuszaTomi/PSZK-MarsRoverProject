@@ -48,6 +48,10 @@ namespace PSZK_MarsRoverProject
         int[] sPosition = new int[2];
         public int missionLength = 48;
         public int maxMinutes = 2880;
+        double visualX;
+        double visualY;
+        double stepX = 0;
+        double stepY = 0;
         public MainWindow()
         {
             InitializeComponent();
@@ -66,6 +70,8 @@ namespace PSZK_MarsRoverProject
             gemimage1 = new BitmapImage(new Uri("pack://application:,,,/Images/zoldasvany.png"));
             gemimage2 = new BitmapImage(new Uri("pack://application:,,,/Images/sargaasvany.png"));
             simTimer = new DispatcherTimer();
+            visualX = sPosition[1];
+            visualY = sPosition[0];
             simTimer.Interval = TimeSpan.FromSeconds(Time.TimeRate);
             simTimer.Tick += SimTimer_Tick;
             //terkep[32, 34] = "R";
@@ -77,6 +83,27 @@ namespace PSZK_MarsRoverProject
             //idolepes
             Time.AddTime();
             Time.RemainingMissionTimeChange(this);
+            //Rover vizuális mozgatása a logikai pozíció felé, sima animációval
+            if (stepX != 0)
+            {
+                visualX += stepX;
+                if ((stepX > 0 && visualX >= rover.Xposition) || (stepX < 0 && visualX <= rover.Xposition))
+                {
+                    visualX = rover.Xposition; // Rápattintjuk a pontos célra
+                    stepX = 0; // Megállítjuk az X tengelyen
+                }
+            }
+            //Ugyanez Y tengelyre
+            if (stepY != 0)
+            {
+                visualY += stepY;
+                // Ez a feltétel biztosítja, hogy ne lépjünk túl a célpozíción, és pontosan odaérjünk, ahol a logikai rover van
+                if ((stepY > 0 && visualY >= rover.Yposition) || (stepY < 0 && visualY <= rover.Yposition))
+                {
+                    visualY = rover.Yposition; // Rápattintjuk a pontos célra
+                    stepY = 0; // Megállítjuk az Y tengelyen
+                }
+            }
             //Visszaszámlálás a küldetés végéig
             double passedMinutes = Time.TimeSpent.TotalMinutes;
             double remainingMinutes = maxMinutes - passedMinutes;
@@ -101,6 +128,10 @@ namespace PSZK_MarsRoverProject
             }
             if (Time.CurrentTime.Minute == 30 || Time.CurrentTime.Minute == 0)
             {
+                visualX = rover.Xposition;
+                visualY = rover.Yposition;
+                stepX = 0;
+                stepY = 0;
                 //akciók végrehajtása
                 if (gameOn)
                 {
@@ -147,11 +178,11 @@ namespace PSZK_MarsRoverProject
                     asvanycounter.Text = $"Kibányászot ásványok: {rover.CollectedMinerals}";
                     // Bányászat után a cella kiürül, a rover pedig készen áll a következő célpont keresésére
                     rover.IsMining = false;
-                    map[rover.Yposition, rover.Xposition] = ".";
-                    if (gemImg[rover.Yposition, rover.Xposition] != null)
+                    map[(int)rover.Yposition, (int)rover.Xposition] = ".";
+                    if (gemImg[(int)rover.Yposition, (int)rover.Xposition] != null)
                     {
-                        jatekter.Children.Remove(gemImg[rover.Yposition, rover.Xposition]);
-                        gemImg[rover.Yposition, rover.Xposition] = null;
+                        jatekter.Children.Remove(gemImg[(int)rover.Yposition, (int)rover.Xposition]);
+                        gemImg[(int)rover.Yposition, (int)rover.Xposition] = null;
                     }
                     WriteToLog($"Kibányásztam egy ásványt a {rover.Xposition};{rover.Yposition} koordinátán!", 0);
                 }
@@ -166,6 +197,8 @@ namespace PSZK_MarsRoverProject
                     rover.MovementEnergyConsumption();
                     WriteToLog($"Megérkeztem a {rover.Xposition};{rover.Yposition} koordinátára", rover.CurrentSpeed);
                     // Lépések megtétele a listában
+                    double startX = rover.Xposition;
+                    double startY = rover.Yposition;
                     for (int i = 0; i < rover.CurrentSpeed; i++)
                     {
                         int[] nextStep = activePath[0];
@@ -173,6 +206,8 @@ namespace PSZK_MarsRoverProject
                         rover.Xposition = nextStep[1]; // X az oszlop
                         activePath.RemoveAt(0);// Az első elemet eltávolítjuk, mert már odaértünk
                     }
+                    stepX = (rover.Xposition - startX) / 20;
+                    stepY = (rover.Yposition - startY) / 20;
 
                     //utvege
                     if (activePath.Count == 0)
@@ -204,7 +239,7 @@ namespace PSZK_MarsRoverProject
                             {
                                 if (activePath.Count > 0)
                                 {
-                                    int[] nextStep = activePath[0];
+                                    int[] nextStep = activePath[0];                               
                                     rover.Yposition = nextStep[0]; // Sor
                                     rover.Xposition = nextStep[1]; // Oszlop
                                     activePath.RemoveAt(0);
@@ -299,17 +334,39 @@ namespace PSZK_MarsRoverProject
 
 
         /// <summary>
-        /// A rover pozíciójának frissítése a játéktéren, valamint a pozíció szövegének frissítése
+        /// A rover pozíciójának frissítése a játéktéren a VIZUÁLIS koordináták alapján
         /// </summary>
         public void RefreshRoverPosition()
+        {
+            // Itt a logikai rover.Xposition helyett a folyamatosan változó visualX-et használjuk!
+            Canvas.SetLeft(roverImg, visualX * tileSize);
+            Canvas.SetTop(roverImg, visualY * tileSize);
+            txtPos.Text = $"X: {(int)rover.Xposition}, Y: {(int)rover.Yposition}";
+            if (FollowRoverBox.IsChecked == true)
+            {
+                kamera.ScrollToVerticalOffset(visualY * tileSize - (kamera.ActualHeight / 2));
+                kamera.ScrollToHorizontalOffset(visualX * tileSize - (kamera.ActualWidth / 2));
+            }
+        }
+
+        public void SetRoverPosition(int[] ToGo)
         {
             Canvas.SetLeft(roverImg, rover.Xposition * tileSize);
             Canvas.SetTop(roverImg, rover.Yposition * tileSize);
             txtPos.Text = $"X: {rover.Xposition}, Y: {rover.Yposition}";
-            if (FollowRoverBox.IsChecked == true)
+            //(rover.Xposition != ToGo[1] || rover.Yposition != ToGo[0])
+            for(int i = 0; i < 10; i++)
             {
-                kamera.ScrollToVerticalOffset(rover.Yposition * tileSize - (kamera.ActualHeight / 2));
-                kamera.ScrollToHorizontalOffset(rover.Xposition * tileSize - (kamera.ActualWidth / 2));
+                if (rover.Xposition < ToGo[1]) 
+                    rover.Xposition += 0.1;
+                else if (rover.Xposition > ToGo[1]) 
+                    rover.Xposition -= 0.1;
+                if (rover.Yposition < ToGo[0]) 
+                    rover.Yposition += 1;
+                else if (rover.Yposition > ToGo[0]) 
+                    rover.Yposition -= 0.1;
+                Canvas.SetLeft(roverImg, rover.Xposition * tileSize);
+                Canvas.SetTop(roverImg, rover.Yposition * tileSize);
             }
         }
 
@@ -413,14 +470,14 @@ namespace PSZK_MarsRoverProject
                     if (rover.Xposition > 0) rover.Xposition++;
                     break;
                 case Key.Q:
-                    string aktualisCella = map[rover.Yposition, rover.Xposition];
+                    string aktualisCella = map[(int)rover.Yposition, (int)rover.Xposition];
                     if (aktualisCella == "G" || aktualisCella == "Y" || aktualisCella == "B")
                     {
-                        map[rover.Yposition, rover.Xposition] = ".";
-                        if (gemImg[rover.Yposition, rover.Xposition] != null)
+                        map[(int)rover.Yposition, (int)rover.Xposition] = ".";
+                        if (gemImg[(int)rover.Yposition, (int)rover.Xposition] != null)
                         {
-                            jatekter.Children.Remove(gemImg[rover.Yposition, rover.Xposition]);
-                            gemImg[rover.Yposition, rover.Xposition] = null;
+                            jatekter.Children.Remove(gemImg[(int)rover.Yposition, (int)rover.Xposition]);
+                            gemImg[(int)rover.Yposition, (int)rover.Xposition] = null;
                         }
                     }
                     break;
