@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -35,40 +31,64 @@ namespace PSZK_MarsRoverProject.Controllers
 
         public static int[] GetSLocation(string[,] map)
         {
-                for (int i = 0; i < map.GetLength(0); i++)
+            for (int i = 0; i < map.GetLength(0); i++)
+            {
+                for (int j = 0; j < map.GetLength(1); j++)
                 {
-                    for (int j = 0; j < map.GetLength(1); j++)
+                    if (map[i, j] == "S")
                     {
-                        if (map[i, j] == "S")
-                        {
-                            return new int[] { i, j };
-                        }
+                        return new int[] { i, j };
                     }
                 }
-                return new int[] { -1, -1 }; // Ha nem találjuk meg az S-t, visszatérünk egy érvénytelen helyzettel
+            }
+            return new int[] { -1, -1 };
         }
 
         public static void FillUpGameSpace(MainWindow mw)
         {
-            for (int i = 0; i < mw.map.GetLength(0); i++)
-            {
-                for (int j = 0; j < mw.map.GetLength(1); j++)
-                {
-                    //tile rajzolas
-                    Image talaj = new Image()
-                    {
-                        Width = MainWindow.tileSize,
-                        Height = MainWindow.tileSize,
-                        Source = GetGroundImageSource(mw),
-                        SnapsToDevicePixels = true
-                    };
-                    Canvas.SetLeft(talaj, j * MainWindow.tileSize);
-                    Canvas.SetTop(talaj, i * MainWindow.tileSize);
-                    Panel.SetZIndex(talaj, 0); //legalso reteg
-                    mw.jatekter.Children.Add(talaj);
+            int rows = mw.map.GetLength(0);
+            int cols = mw.map.GetLength(1);
+            int pixelWidth = cols * MainWindow.tileSize;
+            int pixelHeight = rows * MainWindow.tileSize;
 
+            // Talaj kirajzolása egyetlen háttérképbe (DrawingVisual)
+            DrawingVisual drawingVisual = new DrawingVisual();
+            using (DrawingContext drawingContext = drawingVisual.RenderOpen())
+            {
+                for (int i = 0; i < rows; i++)
+                {
+                    for (int j = 0; j < cols; j++)
+                    {
+                        ImageSource talajSource = GetGroundImageSource(mw);
+                        Rect rect = new Rect(j * MainWindow.tileSize, i * MainWindow.tileSize, MainWindow.tileSize, MainWindow.tileSize);
+                        drawingContext.DrawImage(talajSource, rect);
+                    }
+                }
+            }
+
+            // A kirajzolt vizuális elem bitmap-pé alakítása
+            RenderTargetBitmap bmp = new RenderTargetBitmap(pixelWidth, pixelHeight, 96, 96, PixelFormats.Pbgra32);
+            bmp.Render(drawingVisual);
+
+            Image hattekKep = new Image()
+            {
+                Width = pixelWidth,
+                Height = pixelHeight,
+                Source = bmp,
+                SnapsToDevicePixels = true
+            };
+            Canvas.SetLeft(hattekKep, 0);
+            Canvas.SetTop(hattekKep, 0);
+            Panel.SetZIndex(hattekKep, 0);
+            mw.jatekter.Children.Add(hattekKep);
+
+            // Csak az objektumok (ásványok, akadályok) kerülnek külön Image elemként a Canvas-ra
+            for (int i = 0; i < rows; i++)
+            {
+                for (int j = 0; j < cols; j++)
+                {
                     string jel = mw.map[i, j];
-                    if (jel != "." && jel != "R")
+                    if (jel != "." && jel != "R" && jel != "S")
                     {
                         Image targy = new Image()
                         {
@@ -79,10 +99,9 @@ namespace PSZK_MarsRoverProject.Controllers
                         };
                         Canvas.SetLeft(targy, j * MainWindow.tileSize);
                         Canvas.SetTop(targy, i * MainWindow.tileSize);
-                        Panel.SetZIndex(targy, 1); // A talaj felett legyen
+                        Panel.SetZIndex(targy, 1);
                         mw.jatekter.Children.Add(targy);
 
-                        // Ha ez egy gem (G, Y, B), elmentjük a referenciáját
                         if (jel == "G" || jel == "Y" || jel == "B")
                         {
                             mw.gemImg[i, j] = targy;
@@ -90,26 +109,23 @@ namespace PSZK_MarsRoverProject.Controllers
                     }
                 }
             }
-            //rover rajzolás
+
+            // Rover rajzolás
             mw.roverImg = new Image()
             {
                 Width = MainWindow.tileSize,
                 Height = MainWindow.tileSize,
                 Source = new BitmapImage(new Uri("pack://application:,,,/Images/kicsikocsi.png")),
+                RenderTransformOrigin = new Point(0.5, 0.5),
+                RenderTransform = new RotateTransform(0)
             };
-            //A rover képe mindig a legfelső rétegben legyen
             Panel.SetZIndex(mw.roverImg, 10);
             mw.RefreshRoverPosition();
             mw.jatekter.Children.Add(mw.roverImg);
         }
 
-
         private static readonly Random rnd = new Random();
-        /// <summary>
-        /// A megadott karakter alapján visszaadja a megfelelő képet a játéktérhez
-        /// </summary>
-        /// <param name="karakter">A karakter, amelyhez a képet keresünk</param>
-        /// <returns>A megfelelő ImageSource</returns>
+
         public static ImageSource GetOtherImageSource(string karakter, MainWindow mw)
         {
             int szam = rnd.Next(1, 3);
@@ -134,15 +150,9 @@ namespace PSZK_MarsRoverProject.Controllers
             }
         }
 
-        /// <summary>
-        /// Random módon választ egy talajképet a rendelkezésre álló 7 közül, hogy változatosabbá tegye a játéktér megjelenését
-        /// </summary>
-        /// <returns></returns>
         public static ImageSource GetGroundImageSource(MainWindow mw)
         {
-            // Ha 6-féle talajképed van (groundImage1-6), akkor Next(1, 7) kell
             int szam = rnd.Next(1, 7);
-
             switch (szam)
             {
                 case 1: return mw.groundImage1;

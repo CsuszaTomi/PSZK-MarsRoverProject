@@ -44,6 +44,7 @@ namespace PSZK_MarsRoverProject
         public const int tileSize = 80;
         public SimulationTime Time = new SimulationTime();
         List<int[]> activePath = null;
+        int pathIndex = 0; 
         bool gameOn = false;
         bool BackToSpawn = false;
         bool gameStarted = false;
@@ -56,6 +57,7 @@ namespace PSZK_MarsRoverProject
         double stepY = 0;
         double lastVisualX = -1;
         double lastVisualY = -1;
+        bool isCalculatingPath = false;
         public MainWindow()
         {
             InitializeComponent();
@@ -109,7 +111,7 @@ namespace PSZK_MarsRoverProject
                 MessageBox.Show("Kérem, érvényes számot adjon meg a küldetés hosszára percben!");
             }
         }
-        private void SimTimer_Tick(object sender, EventArgs e)
+        private async void SimTimer_Tick(object sender, EventArgs e)
         {
             //if(Time.MissionEndTime.Minute != 0)
             //{
@@ -131,18 +133,17 @@ namespace PSZK_MarsRoverProject
                 visualX += stepX;
                 if ((stepX > 0 && visualX >= rover.Xposition) || (stepX < 0 && visualX <= rover.Xposition))
                 {
-                    visualX = rover.Xposition; // Rápattintjuk a pontos célra
+                    visualX = rover.Xposition;
                     stepX = 0; // Megállítjuk az X tengelyen
                 }
             }
-            //Ugyanez Y tengelyre
             if (stepY != 0)
             {
                 visualY += stepY;
                 // Ez a feltétel biztosítja, hogy ne lépjünk túl a célpozíción, és pontosan odaérjünk, ahol a logikai rover van
                 if ((stepY > 0 && visualY >= rover.Yposition) || (stepY < 0 && visualY <= rover.Yposition))
                 {
-                    visualY = rover.Yposition; // Rápattintjuk a pontos célra
+                    visualY = rover.Yposition;
                     stepY = 0; // Megállítjuk az Y tengelyen
                 }
             }
@@ -154,6 +155,7 @@ namespace PSZK_MarsRoverProject
             {
                 BackToSpawn = true;
                 activePath = null;
+                pathIndex = 0;
                 WriteToLog("Visszatérés a bázisra.", 0);
             }
             if (Time.IsDay)
@@ -174,14 +176,16 @@ namespace PSZK_MarsRoverProject
                 visualY = rover.Yposition;
                 stepX = 0;
                 stepY = 0;
-                //akciók végrehajtása
+
                 if (gameOn)
                 {
+                    // Ha épp számolunk utat, ne csináljunk mást
+                    if (isCalculatingPath) return;
+
                     if (!rover.IsMining && (activePath == null || activePath.Count == 0))
                     {
                         if (BackToSpawn)
                         {
-                            // Ha hazaértünk
                             if (rover.Yposition == sPosition[0] && rover.Xposition == sPosition[1])
                             {
                                 gameOn = false;
@@ -189,12 +193,17 @@ namespace PSZK_MarsRoverProject
                                 WriteToLog("KÜLDETÉS SIKERES! A rover visszaért.", 0);
                                 return;
                             }
-                            // Ha még úton vagyunk hazafelé
-                            activePath = RoverAI.BackToSpawn(map, rover);
+                            isCalculatingPath = true;
+                            activePath = await Task.Run(() => RoverAI.BackToSpawn(map, rover));
+                            pathIndex = 0;
+                            isCalculatingPath = false;
                         }
                         else
                         {
-                            activePath = RoverAI.LegkozelebbiGemKereses(map, rover);
+                            isCalculatingPath = true;
+                            activePath = await Task.Run(() => RoverAI.LegkozelebbiGemKereses(map, rover));
+                            pathIndex = 0;
+                            isCalculatingPath = false;
 
                             if (activePath == null)
                             {
@@ -228,33 +237,35 @@ namespace PSZK_MarsRoverProject
                     }
                     WriteToLog($"Kibányásztam egy ásványt a {rover.Xposition};{rover.Yposition} koordinátán!", 0);
                 }
-                else if (activePath != null && activePath.Count > 0)
+                else if (activePath != null && pathIndex < activePath.Count)
                 {
                     // Mozgás végrehajtása a meghatározott útvonalon
-                    int desiredSpeed = GetOptimalSpeed(activePath.Count);
+                    int remainingSteps = activePath.Count - pathIndex;
+                    int desiredSpeed = GetOptimalSpeed(remainingSteps);
                     // Ha kevesebb lépés van hátra, mint a sebességünk, akkor csak annyit megyünk
-                    rover.CurrentSpeed = Math.Min(desiredSpeed, activePath.Count);
+                    rover.CurrentSpeed = Math.Min(desiredSpeed, remainingSteps);
                     log.DistanceTraveled += rover.CurrentSpeed;
                     // Fogyasztás levonása a sebesség alapján (E = 2 * v^2)
                     rover.MovementEnergyConsumption();
-                    WriteToLog($"Megérkeztem a {rover.Xposition};{rover.Yposition} koordinátára", rover.CurrentSpeed);
-                    // Lépések megtétele a listában
+                    // Lépések megtétele index-szel (RemoveAt(0) helyett)
                     double startX = rover.Xposition;
                     double startY = rover.Yposition;
                     for (int i = 0; i < rover.CurrentSpeed; i++)
                     {
-                        int[] nextStep = activePath[0];
+                        int[] nextStep = activePath[pathIndex];
                         rover.Yposition = nextStep[0]; // Y a sor
                         rover.Xposition = nextStep[1]; // X az oszlop
-                        activePath.RemoveAt(0);// Az első elemet eltávolítjuk, mert már odaértünk
+                        pathIndex++;
                     }
                     stepX = (rover.Xposition - startX) / 30;
                     stepY = (rover.Yposition - startY) / 30;
 
                     //utvege
-                    if (activePath.Count == 0)
+                    if (pathIndex >= activePath.Count)
                     {
                         rover.IsMining = true;
+                        activePath = null;
+                        pathIndex = 0;
                     }
                 }
                 else if (BackToSpawn)
@@ -266,25 +277,29 @@ namespace PSZK_MarsRoverProject
                         WriteToLog("Visszaértem a kiindulási pontra és a küldetés véget ért!", 0);
                         return;
                     }
-                    else if (activePath == null || activePath.Count == 0)
+                    else if (activePath == null || pathIndex >= activePath.Count)
                     {
-                        activePath = RoverAI.BackToSpawn(map, rover);
+                        isCalculatingPath = true;
+                        activePath = await Task.Run(() => RoverAI.BackToSpawn(map, rover));
+                        pathIndex = 0;
+                        isCalculatingPath = false;
 
                         if (activePath != null && activePath.Count > 0)
                         {
-                            int desiredSpeed = GetOptimalSpeed(activePath.Count);
-                            rover.CurrentSpeed = Math.Min(desiredSpeed, activePath.Count);
+                            int remainingSteps = activePath.Count - pathIndex;
+                            int desiredSpeed = GetOptimalSpeed(remainingSteps);
+                            rover.CurrentSpeed = Math.Min(desiredSpeed, remainingSteps);
                             log.DistanceTraveled += rover.CurrentSpeed;
                             rover.MovementEnergyConsumption();
 
                             for (int i = 0; i < rover.CurrentSpeed; i++)
                             {
-                                if (activePath.Count > 0)
+                                if (pathIndex < activePath.Count)
                                 {
-                                    int[] nextStep = activePath[0];                               
+                                    int[] nextStep = activePath[pathIndex];
                                     rover.Yposition = nextStep[0]; // Sor
                                     rover.Xposition = nextStep[1]; // Oszlop
-                                    activePath.RemoveAt(0);
+                                    pathIndex++;
                                 }
                             }
                             WriteToLog($"Hazafelé tartok... Pozíció: {rover.Xposition};{rover.Yposition}", rover.CurrentSpeed);
@@ -317,14 +332,6 @@ namespace PSZK_MarsRoverProject
 
             ido.Text = $"Idő: {Time.GetCurrentTimeString()} ({Time.CurrentDayProgression})";
             RefreshRoverPosition();
-            //
-            if (RoverAI.DirectionToAngle.TryGetValue(rover.Direction, out double angle))
-            {
-                var rotate = roverImg.RenderTransform as RotateTransform;
-                if (rotate != null)
-                    rotate.Angle = angle;
-            }
-
 
             // Ellenőrizzük, hogy a rover lemerült-e
             if (rover.BatteryLevel <= 0)
@@ -507,7 +514,7 @@ namespace PSZK_MarsRoverProject
 
         private void BoostButton3_Click(object sender, RoutedEventArgs e)
         {
-            Time.TimeRate = 0.033;
+            Time.TimeRate = 0.0001;
             simTimer.Interval = TimeSpan.FromSeconds(Time.TimeRate);
         }
 
