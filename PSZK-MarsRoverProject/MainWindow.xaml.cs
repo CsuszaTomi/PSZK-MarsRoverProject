@@ -92,7 +92,7 @@ namespace PSZK_MarsRoverProject
                 if (!gameStarted)
                 {
                     int hours = int.Parse(DurationInput.Text);
-                    if (hours <= 24)
+                    if (hours < 24)
                     {
                         MessageBox.Show("Kérem, adjon meg egy 24-nél nagyobb vagy egyenlő számot a küldetés hosszára órában!");
                         return;

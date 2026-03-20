@@ -29,7 +29,6 @@ namespace PSZK_MarsRoverProject.Controllers
                 for (int j = 0; j < oszlop; j++)
                     if (terkep[i, j] == "G" || terkep[i, j] == "Y" || terkep[i, j] == "B")
                         gemek.Add((i, j));
-
             //A prioritási sor létrehozása az A* algoritmushoz, ahol a csomópontokat a becsült teljes költség (F = G + H) alapján rendezzük
             PriorityQueue<Node, double> q = new PriorityQueue<Node, double>();
             double[,] eddigiKoltseg = new double[sor, oszlop];
@@ -43,13 +42,12 @@ namespace PSZK_MarsRoverProject.Controllers
             Node startNode = new Node(startX, startY, 0, startH);
             q.Enqueue(startNode, startNode.F);
             eddigiKoltseg[startX, startY] = 0;
-
-            // Lehetséges mozgási irányok
+            // 8 irányú mozgás: fel, le, balra, jobbra, és a négy átlós irány
             int[,] directions = new int[,] {
                 { -1, 0 }, { 1, 0 }, { 0, -1 }, { 0, 1 },
                 { -1, -1 }, { -1, 1 }, { 1, -1 }, { 1, 1 }
             };
-            // A* algoritmus fő ciklusa, addig fut, amíg van még vizsgálandó csomópont a prioritási sorban
+            //A* algoritmus fő ciklusa, ahol a prioritási sorból mindig a legkisebb F értékű csomópontot dolgozzuk fel
             while (q.Count > 0)
             {
                 Node currentTile = q.Dequeue();
@@ -61,7 +59,6 @@ namespace PSZK_MarsRoverProject.Controllers
                 {
                     int szomszedX = currentTile.X + directions[i, 0];
                     int szomszedY = currentTile.Y + directions[i, 1];
-
                     if (szomszedX >= 0 && szomszedX < sor && szomszedY >= 0 && szomszedY < oszlop && terkep[szomszedX, szomszedY] != "#")
                     {
                         double koltseg = 1.0;
