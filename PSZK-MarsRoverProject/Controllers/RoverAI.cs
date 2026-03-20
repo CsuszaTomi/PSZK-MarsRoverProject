@@ -23,58 +23,73 @@ namespace PSZK_MarsRoverProject.Controllers
         {
             int sor = terkep.GetLength(0);
             int oszlop = terkep.GetLength(1);
+            //Összegyűjtjük az összes gem pozícióját a heurisztikához
+            List<(int x, int y)> gemek = new List<(int, int)>();
+            for (int i = 0; i < sor; i++)
+                for (int j = 0; j < oszlop; j++)
+                    if (terkep[i, j] == "G" || terkep[i, j] == "Y" || terkep[i, j] == "B")
+                        gemek.Add((i, j));
+
+            //A prioritási sor létrehozása az A* algoritmushoz, ahol a csomópontokat a becsült teljes költség (F = G + H) alapján rendezzük
             PriorityQueue<Node, double> q = new PriorityQueue<Node, double>();
-            //megjegyzes, koltseg megyjegyzes
             double[,] eddigiKoltseg = new double[sor, oszlop];
             for (int i = 0; i < sor; i++)
-            {
                 for (int j = 0; j < oszlop; j++)
-                {
                     eddigiKoltseg[i, j] = double.MaxValue;
-                }
-            }
             int startX = (int)rover.Yposition;
             int startY = (int)rover.Xposition;
-            //Kiinduló pont hozzáadása a prioritási sorhoz
-            Node startNode = new Node(startX, startY, 0, 0);
+            // Heurisztika (H): légvonalbeli távolság a legközelebbi gemhez
+            double startH = Heurisztika(startX, startY, gemek);
+            Node startNode = new Node(startX, startY, 0, startH);
             q.Enqueue(startNode, startNode.F);
             eddigiKoltseg[startX, startY] = 0;
-            //8 irany: fel, le, balra, jobbra + 4 diagonal
+
+            // Lehetséges mozgási irányok
             int[,] directions = new int[,] {
-                { -1, 0 }, { 1, 0 }, { 0, -1 }, { 0, 1 },   // Merőleges
-                { -1, -1 }, { -1, 1 }, { 1, -1 }, { 1, 1 }  // Átlós
-                };
+                { -1, 0 }, { 1, 0 }, { 0, -1 }, { 0, 1 },
+                { -1, -1 }, { -1, 1 }, { 1, -1 }, { 1, 1 }
+            };
+            // A* algoritmus fő ciklusa, addig fut, amíg van még vizsgálandó csomópont a prioritási sorban
             while (q.Count > 0)
             {
                 Node currentTile = q.Dequeue();
-                //Cel ellenorzese
                 if (terkep[currentTile.X, currentTile.Y] == "G" || terkep[currentTile.X, currentTile.Y] == "Y" || terkep[currentTile.X, currentTile.Y] == "B")
                 {
                     return UtvonalOsszeallitasa(currentTile);
                 }
-                //szomszedok vizsgalata
                 for (int i = 0; i < directions.GetLength(0); i++)
                 {
                     int szomszedX = currentTile.X + directions[i, 0];
                     int szomszedY = currentTile.Y + directions[i, 1];
+
                     if (szomszedX >= 0 && szomszedX < sor && szomszedY >= 0 && szomszedY < oszlop && terkep[szomszedX, szomszedY] != "#")
                     {
-                        // KÖLTSÉG SZÁMÍTÁSA: 
-                        // minden blokk 1 lépés.
-                        // később energiafogyasztas
                         double koltseg = 1.0;
-                        double ujG = currentTile.G + koltseg;//curr G + koltseg
+                        double ujG = currentTile.G + koltseg;
+                        // Csak akkor frissítjük a szomszéd költségét és helyét, ha jobb útvonalat találtunk
                         if (ujG < eddigiKoltseg[szomszedX, szomszedY])
                         {
                             eddigiKoltseg[szomszedX, szomszedY] = ujG;
-                            //curr lessz a szomszed szülője
-                            Node szomszed = new Node(szomszedX, szomszedY, ujG, 0, currentTile);
+                            double h = Heurisztika(szomszedX, szomszedY, gemek);
+                            Node szomszed = new Node(szomszedX, szomszedY, ujG, h, currentTile);
                             q.Enqueue(szomszed, szomszed.F);
                         }
                     }
                 }
             }
             return null;
+        }
+
+        public static double Heurisztika(int x, int y, List<(int x, int y)> gemek)
+        {
+            if (gemek.Count == 0) return 0;
+            double minTav = double.MaxValue;
+            foreach (var g in gemek)
+            {
+                double tav = Math.Sqrt(Math.Pow(g.x - x, 2) + Math.Pow(g.y - y, 2));
+                if (tav < minTav) minTav = tav;
+            }
+            return minTav;
         }
 
         /// <summary>

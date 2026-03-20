@@ -92,9 +92,9 @@ namespace PSZK_MarsRoverProject
                 if (!gameStarted)
                 {
                     int hours = int.Parse(DurationInput.Text);
-                    if (hours < 25)
+                    if (hours <= 24)
                     {
-                        MessageBox.Show("Kérem, adjon meg egy 24-nél számot a küldetés hosszára órában!");
+                        MessageBox.Show("Kérem, adjon meg egy 24-nél nagyobb vagy egyenlő számot a küldetés hosszára órában!");
                         return;
                     }
                     gameStarted = true;
@@ -266,7 +266,10 @@ namespace PSZK_MarsRoverProject
                     //utvege
                     if (pathIndex >= activePath.Count)
                     {
-                        rover.IsMining = true;
+                        if (!BackToSpawn)
+                        {
+                            rover.IsMining = true;
+                        }
                         activePath = null;
                         pathIndex = 0;
                     }
