@@ -54,6 +54,8 @@ namespace PSZK_MarsRoverProject
         double visualY;
         double stepX = 0;
         double stepY = 0;
+        double lastVisualX = -1;
+        double lastVisualY = -1;
         public MainWindow()
         {
             InitializeComponent();
@@ -252,8 +254,8 @@ namespace PSZK_MarsRoverProject
                         rover.Xposition = nextStep[1]; // X az oszlop
                         activePath.RemoveAt(0);// Az első elemet eltávolítjuk, mert már odaértünk
                     }
-                    stepX = (rover.Xposition - startX) / 20;
-                    stepY = (rover.Yposition - startY) / 20;
+                    stepX = (rover.Xposition - startX) / 30;
+                    stepY = (rover.Yposition - startY) / 30;
 
                     //utvege
                     if (activePath.Count == 0)
@@ -305,18 +307,29 @@ namespace PSZK_MarsRoverProject
                 IsntChargingindicator.Visibility = rover.IsCharging ? Visibility.Collapsed : Visibility.Visible;
             }
 
-            egysegnyiuzemanyag.Text = $"{rover.AllBatteryUsage.ToString()} egység";
-            osszlepes.Text = $"Megtett összlépés: {log.DistanceTraveled}";
-            UpdateChart();
-            egyblokk.Text = $"Lassú (2 egység/fél óra) {rover.Speed1BatteryUsage} energia elhasználva.";
-            kettőblokk.Text = $"Normál (8 egység/fél óra) {rover.Speed2BatteryUsage} energia elhasználva.";
-            háromblokk.Text = $"Gyors (18 egység/fél óra) {rover.Speed3BatteryUsage} energia elhasználva.";
-            miningenergy.Text = $"Bányászás (2 egység/fél óra) {rover.MiningBatteryUsage} energia elhasználva.";
-            standybyenergy.Text = $"StandBy (1 egység/fél óra) {rover.StandByBatteryUsage} energia elhasználva.";
-            EnergyBar.Value = rover.BatteryLevel;
+            if (Time.CurrentTime.Minute == 30 || Time.CurrentTime.Minute == 0)
+            {
+                egysegnyiuzemanyag.Text = $"{rover.AllBatteryUsage} egység";
+                osszlepes.Text = $"Megtett összlépés: {log.DistanceTraveled}";
+                UpdateChart(); // Most már csak logikai lépésenként számolja újra a kört!
+                egyblokk.Text = $"Lassú (2 egység/fél óra) {rover.Speed1BatteryUsage} energia elhasználva.";
+                kettőblokk.Text = $"Normál (8 egység/fél óra) {rover.Speed2BatteryUsage} energia elhasználva.";
+                háromblokk.Text = $"Gyors (18 egység/fél óra) {rover.Speed3BatteryUsage} energia elhasználva.";
+                miningenergy.Text = $"Bányászás (2 egység/fél óra) {rover.MiningBatteryUsage} energia elhasználva.";
+                standybyenergy.Text = $"StandBy (1 egység/fél óra) {rover.StandByBatteryUsage} energia elhasználva.";
+                EnergyBar.Value = rover.BatteryLevel;
+            }
+
+
             ido.Text = $"Idő: {Time.GetCurrentTimeString()} ({Time.CurrentDayProgression})";
-            RefreshRoverPosition();
-            //
+
+            if (Math.Abs(lastVisualX - visualX) > 0.001 || Math.Abs(lastVisualY - visualY) > 0.001)
+            {
+                RefreshRoverPosition();
+                lastVisualX = visualX;
+                lastVisualY = visualY;
+            }
+
             if (RoverAI.DirectionToAngle.TryGetValue(rover.Direction, out double angle))
             {
                 var rotate = roverImg.RenderTransform as RotateTransform;
@@ -388,6 +401,11 @@ namespace PSZK_MarsRoverProject
             };
 
             LogPanel.Children.Insert(0, newLog);
+
+            if (LogPanel.Children.Count > 50)
+            {
+                LogPanel.Children.RemoveAt(LogPanel.Children.Count - 1);
+            }
         }
 
 
@@ -536,7 +554,7 @@ namespace PSZK_MarsRoverProject
 
         private void BoostButton3_Click(object sender, RoutedEventArgs e)
         {
-            Time.TimeRate = 0.0001;
+            Time.TimeRate = 0.033;
             simTimer.Interval = TimeSpan.FromSeconds(Time.TimeRate);
         }
 

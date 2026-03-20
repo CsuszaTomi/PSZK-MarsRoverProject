@@ -206,7 +206,7 @@ namespace PSZK_MarsRoverProject.Controllers
             if (dx > 0 && dy > 0) return "Down-Right";
             if (dx < 0 && dy > 0) return "Down-Left";
 
-            return "Right"; // alapértelmezett
+            return "Up"; // alapértelmezett
         }
 
         public static readonly Dictionary<string, double> DirectionToAngle = new()
@@ -215,10 +215,10 @@ namespace PSZK_MarsRoverProject.Controllers
             ["Down"] = 90,
             ["Left"] = 180,
             ["Right"] = 0,
-            ["Up-Left"] = 135,
+            ["Up-Left"] = -135,
             ["Up-Right"] = -45,
             ["Down-Left"] = 135,
-            ["Down-Right"] = -45
+            ["Down-Right"] = 45
         };
     }
 }
