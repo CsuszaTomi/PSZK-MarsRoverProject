@@ -21,10 +21,12 @@ namespace PSZK_MarsRoverProject.Models
         public float MiningBatteryUsage { get; set; }
         public float BatteryLevel { get; set; }
         public bool IsCharging { get; set; }
-
+        public string Direction { get; set; }
         public int CurrentSpeed { get; set; }
 
         public bool IsMining { get; set; }
+
+
 
         public void MovementEnergyConsumption()
         {

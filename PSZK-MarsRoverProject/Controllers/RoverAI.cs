@@ -192,5 +192,33 @@ namespace PSZK_MarsRoverProject.Controllers
             int alapSzuksegesPerc = lepesek * 17;
             return alapSzuksegesPerc + 60;
         }
+        public static string GetDirection(int fromX, int fromY, int toX, int toY)
+        {
+            int dx = toX - fromX;
+            int dy = toY - fromY;
+            if (dx == 0 && dy < 0) return "Up";
+            if (dx == 0 && dy > 0) return "Down";
+            if (dx < 0 && dy == 0) return "Left";
+            if (dx > 0 && dy == 0) return "Right";
+
+            if (dx > 0 && dy < 0) return "Up-Right";
+            if (dx < 0 && dy < 0) return "Up-Left";
+            if (dx > 0 && dy > 0) return "Down-Right";
+            if (dx < 0 && dy > 0) return "Down-Left";
+
+            return "Right"; // alapértelmezett
+        }
+
+        public static readonly Dictionary<string, double> DirectionToAngle = new()
+        {
+            ["Up"] = -90,
+            ["Down"] = 90,
+            ["Left"] = 180,
+            ["Right"] = 0,
+            ["Up-Left"] = 135,
+            ["Up-Right"] = -45,
+            ["Down-Left"] = 135,
+            ["Down-Right"] = -45
+        };
     }
 }

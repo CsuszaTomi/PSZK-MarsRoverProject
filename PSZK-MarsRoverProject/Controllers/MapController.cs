@@ -96,6 +96,8 @@ namespace PSZK_MarsRoverProject.Controllers
                 Width = MainWindow.tileSize,
                 Height = MainWindow.tileSize,
                 Source = new BitmapImage(new Uri("pack://application:,,,/Images/kicsikocsi.png")),
+                RenderTransformOrigin = new Point(0.5, 0.5),
+                RenderTransform = new RotateTransform(0)
             };
             //A rover képe mindig a legfelső rétegben legyen
             Panel.SetZIndex(mw.roverImg, 10);

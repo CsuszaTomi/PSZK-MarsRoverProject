@@ -60,7 +60,7 @@ namespace PSZK_MarsRoverProject
             Time.SetTime(8, 0);
             map = MapController.CsvReader();
             sPosition = MapController.GetSLocation(map);
-            rover = new Rover() { Xposition = sPosition[1], Yposition = sPosition[0], BatteryLevel = 100, IsCharging = true };
+            rover = new Rover() { Xposition = sPosition[1], Yposition = sPosition[0], BatteryLevel = 100, IsCharging = true, Direction = "Right" };
             groundImage1 = new BitmapImage(new Uri("pack://application:,,,/Images/ground1.png"));
             groundImage2 = new BitmapImage(new Uri("pack://application:,,,/Images/ground2.png"));
             groundImage3 = new BitmapImage(new Uri("pack://application:,,,/Images/ground3.png"));
@@ -109,17 +109,17 @@ namespace PSZK_MarsRoverProject
         }
         private void SimTimer_Tick(object sender, EventArgs e)
         {
-            if(Time.MissionEndTime.Minute != 0)
-            {
-                if(rover.Yposition == sPosition[0] && rover.Xposition == sPosition[1])
-                {
-                    MessageBox.Show($"Siker");
-                }
-                else
-                {
-                    MessageBox.Show($"A rover pozija x{rover.Xposition} és y{rover.Yposition}, {missionLength}");
-                }
-            }
+            //if(Time.MissionEndTime.Minute != 0)
+            //{
+            //    if(rover.Yposition == sPosition[0] && rover.Xposition == sPosition[1])
+            //    {
+            //        MessageBox.Show($"Siker");
+            //    }
+            //    else
+            //    {
+            //        MessageBox.Show($"A rover pozija x{rover.Xposition} és y{rover.Yposition}, {missionLength}");
+            //    }
+            //}
             //idolepes
             Time.AddTime();
             Time.RemainingMissionTimeChange(this);
@@ -203,6 +203,12 @@ namespace PSZK_MarsRoverProject
                         {
                             var cel = activePath.Last();
                             celPozicio.Text = $"Cél -> X: {cel[1]}, Y: {cel[0]}";
+                            rover.Direction = RoverAI.GetDirection(
+                                (int)rover.Yposition,
+                                (int)rover.Xposition,
+                                cel[0],
+                                cel[1]
+                            );
                         }
                         else
                         {
@@ -310,6 +316,13 @@ namespace PSZK_MarsRoverProject
             EnergyBar.Value = rover.BatteryLevel;
             ido.Text = $"Idő: {Time.GetCurrentTimeString()} ({Time.CurrentDayProgression})";
             RefreshRoverPosition();
+            //
+            if (RoverAI.DirectionToAngle.TryGetValue(rover.Direction, out double angle))
+            {
+                var rotate = roverImg.RenderTransform as RotateTransform;
+                if (rotate != null)
+                    rotate.Angle = angle;
+            }
 
 
             // Ellenőrizzük, hogy a rover lemerült-e
