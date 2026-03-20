@@ -189,8 +189,15 @@ namespace PSZK_MarsRoverProject
                             {
                                 gameOn = false;
                                 simTimer.Stop();
-                                Dashboard.WriteToLog("KÜLDETÉS SIKERES! A rover visszaért.", 0, this, rover, log);
-                                return;
+                                Dashboard.WriteToLog("A KÜLDETÉS SIKERES! A rover visszaért.", 0, this, rover, log);
+                                ShowGameOver(true);
+                            }
+                            else if (remainingMinutes == 0) 
+                            {
+                                gameOn = false;
+                                simTimer.Stop();
+                                Dashboard.WriteToLog("A küldetés sikertelen! A rover nem tudott visszatérni.", 0, this, rover, log);
+                                ShowGameOver(false);
                             }
                             isCalculatingPath = true;
                             activePath = await Task.Run(() => RoverAI.BackToSpawn(map, rover));
@@ -281,7 +288,7 @@ namespace PSZK_MarsRoverProject
                         gameOn = false;
                         simTimer.Stop();
                         Dashboard.WriteToLog("Visszaértem a kiindulási pontra és a küldetés véget ért!", 0, this, rover, log);
-                        return;
+                        ShowGameOver(true);
                     }
                     else if (activePath == null || pathIndex >= activePath.Count)
                     {
@@ -350,7 +357,7 @@ namespace PSZK_MarsRoverProject
             {
                 rover.BatteryLevel = 0;
                 simTimer.Stop();
-                MessageBox.Show("A küldetés véget ért: A Rover lemerült!");
+                ShowGameOver(false);
             }
         }
 
@@ -390,6 +397,28 @@ namespace PSZK_MarsRoverProject
             return Math.Min(speed, hatralevoLepesek);
         }
 
+        private void ShowGameOver(bool sikeres)
+        {
+            GOAsványok.Text = $"{rover.CollectedMinerals} db";
+            GOTavolsag.Text = $"{log.DistanceTraveled} lépés";
+            GOEnergia.Text = $"{rover.AllBatteryUsage} egység";
+            if (sikeres)
+            {
+                GameOverCim.Text = "KÜLDETÉS SIKERES";
+                GameOverCim.Foreground = new SolidColorBrush(Color.FromRgb(77, 255, 77));
+                GameOverUzenet.Text = "A rover sikeresen visszatért a bázisra!";
+                GameOverUzenet.Foreground = new SolidColorBrush(Color.FromRgb(77, 255, 77));
+            }
+            else
+            {
+                GameOverCim.Text = "KÜLDETÉS SIKERTELEN";
+                GameOverCim.Foreground = new SolidColorBrush(Color.FromRgb(255, 77, 77));
+                GameOverUzenet.Text = "A rover lemerült vagy nem tudott visszatérni a bázisra!";
+                GameOverUzenet.Foreground = new SolidColorBrush(Color.FromRgb(255, 77, 77));
+            }
+
+            GameOverOverlay.Visibility = Visibility.Visible;
+        }
 
         /// <summary>
         /// A rover pozíciójának frissítése a játéktéren a VIZUÁLIS koordináták alapján

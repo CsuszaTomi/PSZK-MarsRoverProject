@@ -227,5 +227,33 @@
                 </StackPanel>
             </ScrollViewer>
         </Border>
+        <!-- Kuldetes vege overlay -->
+        <Grid x:Name="GameOverOverlay" Grid.ColumnSpan="2" Background="#CC000000" Visibility="Collapsed" Panel.ZIndex="100">
+            <Border Background="#1e1e1e" BorderBrush="#ff9d00" BorderThickness="2" CornerRadius="12" Padding="40" MaxWidth="500" MaxHeight="400" HorizontalAlignment="Center" VerticalAlignment="Center">
+                <StackPanel HorizontalAlignment="Center">
+                    <TextBlock x:Name="GameOverCim" Text="KÜLDETÉS VÉGE" Foreground="#ff9d00" FontSize="28" FontFamily="Segoe UI Black" HorizontalAlignment="Center" Margin="0,0,0,20"/>
+                    <Separator Background="#3e3e42" Margin="0,0,0,20"/>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Begyűjtött ásványok:" Foreground="#aaaaaa" FontSize="14" Margin="0,0,10,10"/>
+                        <TextBlock Grid.Row="0" Grid.Column="1" x:Name="GOAsványok" Text="0 db" Foreground="White" FontSize="14" FontWeight="Bold" HorizontalAlignment="Right" Margin="0,0,0,10"/>
+                        <TextBlock Grid.Row="1" Grid.Column="0" Text="Megtett távolság:" Foreground="#aaaaaa" FontSize="14" Margin="0,0,10,10"/>
+                        <TextBlock Grid.Row="1" Grid.Column="1" x:Name="GOTavolsag" Text="0 lépés" Foreground="White" FontSize="14" FontWeight="Bold" HorizontalAlignment="Right" Margin="0,0,0,10"/>
+                        <TextBlock Grid.Row="2" Grid.Column="0" Text="Felhasznált energia:" Foreground="#aaaaaa" FontSize="14" Margin="0,0,10,0"/>
+                        <TextBlock Grid.Row="2" Grid.Column="1" x:Name="GOEnergia" Text="0 egység" Foreground="White" FontSize="14" FontWeight="Bold" HorizontalAlignment="Right"/>
+                    </Grid>
+                    <Separator Background="#3e3e42" Margin="0,20,0,20"/>
+                    <TextBlock x:Name="GameOverUzenet" Text="" Foreground="#4dff4d" FontSize="13" FontStyle="Italic" HorizontalAlignment="Center" TextWrapping="Wrap" TextAlignment="Center"/>
+                </StackPanel>
+            </Border>
+        </Grid>
     </Grid>
 </Window>
