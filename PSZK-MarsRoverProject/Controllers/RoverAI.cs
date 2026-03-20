@@ -77,6 +77,13 @@ namespace PSZK_MarsRoverProject.Controllers
             return null;
         }
 
+        /// <summary>
+        /// A heurisztikus függvény, amely kiszámítja a légvonalbeli távolságot a jelenlegi pozíciótól a legközelebbi gyűjthető ásványig (Kék: "B", Sárga: "Y", Zöld: "G").
+        /// </summary>
+        /// <param name="x">A jelenlegi pozíció X koordinátája.</param>
+        /// <param name="y">A jelenlegi pozíció Y koordinátája.</param>
+        /// <param name="gemek">A gyűjthető ásványok listája.</param>
+        /// <returns>A legközelebbi ásványhoz vezető légvonalbeli távolság.</returns>
         public static double Heurisztika(int x, int y, List<(int x, int y)> gemek)
         {
             if (gemek.Count == 0) return 0;
