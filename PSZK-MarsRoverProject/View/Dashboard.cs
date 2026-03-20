@@ -81,7 +81,7 @@ namespace PSZK_MarsRoverProject.View
             string logText =
             $"[{mw.Time.GetCurrentTimeString()}] {message}\n" +
             $"  • Akku: {rover.BatteryLevel}\n" +
-            $"  • Sebesség: {speed} | Távolság: {log.DistanceTraveled}\n" +
+            $"  • Sebesség: {speed} | Megtett távolság: {log.DistanceTraveled}\n" +
             $"  • Begyűjtött ásványok: {rover.CollectedMinerals}";
 
             TextBlock newLog = new TextBlock

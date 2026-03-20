@@ -244,6 +244,7 @@ namespace PSZK_MarsRoverProject
                     // Ha kevesebb lépés van hátra, mint a sebességünk, akkor csak annyit megyünk
                     rover.CurrentSpeed = Math.Min(desiredSpeed, remainingSteps);
                     log.DistanceTraveled += rover.CurrentSpeed;
+                    Dashboard.WriteToLog($"Elindúltam a {rover.Xposition};{rover.Yposition} koordinátáról!", rover.CurrentSpeed, this, rover, log);
                     // Fogyasztás levonása a sebesség alapján (E = 2 * v^2)
                     rover.MovementEnergyConsumption();
                     // Lépések megtétele index-szel (RemoveAt(0) helyett)
