@@ -14,6 +14,7 @@ using System.Windows.Shapes;
 using System.Windows.Threading;
 using PSZK_MarsRoverProject.Controllers;
 using PSZK_MarsRoverProject.Models;
+using PSZK_MarsRoverProject.View;
 
 namespace PSZK_MarsRoverProject
 {
@@ -101,7 +102,7 @@ namespace PSZK_MarsRoverProject
                     simTimer.Start();
                     missionLength = hours;
                     maxMinutes = missionLength * 60;
-                    WriteToLog("A küldetés elindult...", 0);
+                    Dashboard.WriteToLog("A küldetés elindult...", 0, this, rover, log);
                 }
             }
             catch (FormatException)
@@ -154,7 +155,7 @@ namespace PSZK_MarsRoverProject
                 BackToSpawn = true;
                 activePath = null;
                 pathIndex = 0;
-                WriteToLog("Visszatérés a bázisra.", 0);
+                Dashboard.WriteToLog("Visszatérés a bázisra.", 0, this, rover, log);
             }
             if (Time.IsDay)
             {
@@ -188,7 +189,7 @@ namespace PSZK_MarsRoverProject
                             {
                                 gameOn = false;
                                 simTimer.Stop();
-                                WriteToLog("KÜLDETÉS SIKERES! A rover visszaért.", 0);
+                                Dashboard.WriteToLog("KÜLDETÉS SIKERES! A rover visszaért.", 0, this, rover, log);
                                 return;
                             }
                             isCalculatingPath = true;
@@ -233,7 +234,7 @@ namespace PSZK_MarsRoverProject
                         jatekter.Children.Remove(gemImg[(int)rover.Yposition, (int)rover.Xposition]);
                         gemImg[(int)rover.Yposition, (int)rover.Xposition] = null;
                     }
-                    WriteToLog($"Kibányásztam egy ásványt a {rover.Xposition};{rover.Yposition} koordinátán!", 0);
+                    Dashboard.WriteToLog($"Kibányásztam egy ásványt a {rover.Xposition};{rover.Yposition} koordinátán!", 0, this, rover, log);
                 }
                 else if (activePath != null && pathIndex < activePath.Count)
                 {
@@ -257,7 +258,10 @@ namespace PSZK_MarsRoverProject
                     }
                     stepX = (rover.Xposition - startX) / 30;
                     stepY = (rover.Yposition - startY) / 30;
-
+                    // Szög kiszámítása a mozgás irányának megfelelően
+                    double angle = Math.Atan2(stepY, stepX) * (180.0 / Math.PI) - 90;
+                    if (roverImg.RenderTransform is RotateTransform rt)
+                        rt.Angle = angle;
                     //utvege
                     if (pathIndex >= activePath.Count)
                     {
@@ -272,7 +276,7 @@ namespace PSZK_MarsRoverProject
                     {
                         gameOn = false;
                         simTimer.Stop();
-                        WriteToLog("Visszaértem a kiindulási pontra és a küldetés véget ért!", 0);
+                        Dashboard.WriteToLog("Visszaértem a kiindulási pontra és a küldetés véget ért!", 0, this, rover, log);
                         return;
                     }
                     else if (activePath == null || pathIndex >= activePath.Count)
@@ -289,7 +293,8 @@ namespace PSZK_MarsRoverProject
                             rover.CurrentSpeed = Math.Min(desiredSpeed, remainingSteps);
                             log.DistanceTraveled += rover.CurrentSpeed;
                             rover.MovementEnergyConsumption();
-
+                            double startX = rover.Xposition;
+                            double startY = rover.Yposition;
                             for (int i = 0; i < rover.CurrentSpeed; i++)
                             {
                                 if (pathIndex < activePath.Count)
@@ -300,7 +305,12 @@ namespace PSZK_MarsRoverProject
                                     pathIndex++;
                                 }
                             }
-                            WriteToLog($"Hazafelé tartok... Pozíció: {rover.Xposition};{rover.Yposition}", rover.CurrentSpeed);
+                            double btsStepX = (rover.Xposition - startX) / 30.0;
+                            double btsStepY = (rover.Yposition - startY) / 30.0;
+                            double angle = Math.Atan2(btsStepY, btsStepX) * (180.0 / Math.PI) - 90;
+                            if (roverImg.RenderTransform is RotateTransform rt)
+                                rt.Angle = angle;
+                            Dashboard.WriteToLog($"Hazafelé tartok... Pozíció: {rover.Xposition};{rover.Yposition}", rover.CurrentSpeed, this, rover, log);
                         }
                     }
                 }
@@ -318,7 +328,7 @@ namespace PSZK_MarsRoverProject
             {
                 egysegnyiuzemanyag.Text = $"{rover.AllBatteryUsage} egység";
                 osszlepes.Text = $"Megtett összlépés: {log.DistanceTraveled}";
-                UpdateChart(); // Most már csak logikai lépésenként számolja újra a kört!
+                Dashboard.UpdateChart(rover, this);
                 egyblokk.Text = $"Lassú (2 egység/fél óra) {rover.Speed1BatteryUsage} energia elhasználva.";
                 kettőblokk.Text = $"Normál (8 egység/fél óra) {rover.Speed2BatteryUsage} energia elhasználva.";
                 háromblokk.Text = $"Gyors (18 egység/fél óra) {rover.Speed3BatteryUsage} energia elhasználva.";
@@ -339,8 +349,6 @@ namespace PSZK_MarsRoverProject
                 MessageBox.Show("A küldetés véget ért: A Rover lemerült!");
             }
         }
-
-
 
         private int GetOptimalSpeed(int hatralevoLepesek)
         {
@@ -378,30 +386,6 @@ namespace PSZK_MarsRoverProject
             return Math.Min(speed, hatralevoLepesek);
         }
 
-        private void WriteToLog(string message, int speed)
-        {
-            string logText =
-            $"[{Time.GetCurrentTimeString()}] {message}\n" +
-            $"  • Akku: {rover.BatteryLevel}\n" +
-            $"  • Sebesség: {speed} | Távolság: {log.DistanceTraveled}\n" +
-            $"  • Begyűjtött ásványok: {rover.CollectedMinerals}";
-
-            TextBlock newLog = new TextBlock
-            {
-                Text = logText,
-                Foreground = Brushes.White,
-                FontSize = 12,
-                Margin = new Thickness(0, 0, 0, 5)
-            };
-
-            LogPanel.Children.Insert(0, newLog);
-
-            if (LogPanel.Children.Count > 50)
-            {
-                LogPanel.Children.RemoveAt(LogPanel.Children.Count - 1);
-            }
-        }
-
 
         /// <summary>
         /// A rover pozíciójának frissítése a játéktéren a VIZUÁLIS koordináták alapján
@@ -423,67 +407,6 @@ namespace PSZK_MarsRoverProject
         {
             kamera.ScrollToVerticalOffset(rover.Yposition * tileSize - (kamera.ActualHeight / 2));
             kamera.ScrollToHorizontalOffset(rover.Xposition * tileSize - (kamera.ActualWidth / 2));
-        }
-
-        private string DrawPieSlice(double radius, double startAngle, double sweepAngle)
-        {
-            // A kör közepe a 140x140-es méret alapján
-            double centerX = 70;
-            double centerY = 70;
-
-            if (sweepAngle >= 360) sweepAngle = 359.999;
-
-            // Szögek átváltása radiánba a -90 azért kell, hogy felülről, 12 órától induljon a rajz
-            double startRad = (startAngle - 90) * Math.PI / 180.0;
-            double endRad = (startAngle + sweepAngle - 90) * Math.PI / 180.0;
-
-            // Kezdő és végpontok kiszámítása a kör ívén
-            double x1 = centerX + radius * Math.Cos(startRad);
-            double y1 = centerY + radius * Math.Sin(startRad);
-
-            double x2 = centerX + radius * Math.Cos(endRad);
-            double y2 = centerY + radius * Math.Sin(endRad);
-
-            // Nagyív jelzése (1 ha a sweepAngle nagyobb, mint 180 fok)
-            int isLargeArc = sweepAngle > 180 ? 1 : 0;
-            return $"M {centerX},{centerY} L {x1.ToString(CultureInfo.InvariantCulture)},{y1.ToString(CultureInfo.InvariantCulture)} " +
-                   $"A {radius},{radius} 0 {isLargeArc},1 {x2.ToString(CultureInfo.InvariantCulture)},{y2.ToString(CultureInfo.InvariantCulture)} Z";
-        }
-
-        public void UpdateChart()
-        {
-            // Az egyes tevékenységekhez tartozó fogyasztások összegzése
-            double total = rover.Speed1BatteryUsage +
-                           rover.Speed2BatteryUsage +
-                           rover.Speed3BatteryUsage +
-                           rover.MiningBatteryUsage +
-                           rover.StandByBatteryUsage;
-
-            // Ha még nem fogyasztott semmit, nem rajzolunk semmit
-            if (total == 0) return;
-
-            // Szeletek szögeinek kiszámítása a teljes fogyasztáshoz viszonyítva
-            double a1 = (rover.Speed1BatteryUsage / total) * 360;
-            double a2 = (rover.Speed2BatteryUsage / total) * 360;
-            double a3 = (rover.Speed3BatteryUsage / total) * 360;
-            double a4 = (rover.MiningBatteryUsage / total) * 360;
-            double a5 = (rover.StandByBatteryUsage / total) * 360;
-
-            double currentAngle = 0;
-            // A szeletek rajzolása a körön
-            SliceSpeed1.Data = Geometry.Parse(DrawPieSlice(70, currentAngle, a1));
-            currentAngle += a1;
-
-            SliceSpeed2.Data = Geometry.Parse(DrawPieSlice(70, currentAngle, a2));
-            currentAngle += a2;
-
-            SliceSpeed3.Data = Geometry.Parse(DrawPieSlice(70, currentAngle, a3));
-            currentAngle += a3;
-
-            SliceMining.Data = Geometry.Parse(DrawPieSlice(70, currentAngle, a4));
-            currentAngle += a4;
-
-            SliceStandby.Data = Geometry.Parse(DrawPieSlice(70, currentAngle, a5));
         }
 
         private void Window_KeyDown(object sender, KeyEventArgs e)
