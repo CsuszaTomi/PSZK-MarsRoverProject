@@ -60,7 +60,7 @@ namespace PSZK_MarsRoverProject
             Time.SetTime(8, 0);
             map = MapController.CsvReader();
             sPosition = MapController.GetSLocation(map);
-            rover = new Rover() { Xposition = sPosition[1], Yposition = sPosition[0], BatteryLevel = 100, IsCharging = true, Direction = "Right" };
+            rover = new Rover() { Xposition = sPosition[1], Yposition = sPosition[0], BatteryLevel = 100, IsCharging = true, Direction = "Down" };
             groundImage1 = new BitmapImage(new Uri("pack://application:,,,/Images/ground1.png"));
             groundImage2 = new BitmapImage(new Uri("pack://application:,,,/Images/ground2.png"));
             groundImage3 = new BitmapImage(new Uri("pack://application:,,,/Images/ground3.png"));
@@ -203,12 +203,6 @@ namespace PSZK_MarsRoverProject
                         {
                             var cel = activePath.Last();
                             celPozicio.Text = $"Cél -> X: {cel[1]}, Y: {cel[0]}";
-                            rover.Direction = RoverAI.GetDirection(
-                                (int)rover.Yposition,
-                                (int)rover.Xposition,
-                                cel[0],
-                                cel[1]
-                            );
                         }
                         else
                         {
@@ -316,13 +310,6 @@ namespace PSZK_MarsRoverProject
             EnergyBar.Value = rover.BatteryLevel;
             ido.Text = $"Idő: {Time.GetCurrentTimeString()} ({Time.CurrentDayProgression})";
             RefreshRoverPosition();
-            //
-            if (RoverAI.DirectionToAngle.TryGetValue(rover.Direction, out double angle))
-            {
-                var rotate = roverImg.RenderTransform as RotateTransform;
-                if (rotate != null)
-                    rotate.Angle = angle;
-            }
 
 
             // Ellenőrizzük, hogy a rover lemerült-e
@@ -333,6 +320,7 @@ namespace PSZK_MarsRoverProject
                 MessageBox.Show("A küldetés véget ért: A Rover lemerült!");
             }
         }
+
 
 
         private int GetOptimalSpeed(int hatralevoLepesek)
@@ -494,43 +482,7 @@ namespace PSZK_MarsRoverProject
                     kamera.ScrollToVerticalOffset(rover.Yposition * tileSize - (kamera.ActualHeight / 2));
                     kamera.ScrollToHorizontalOffset(rover.Xposition * tileSize - (kamera.ActualWidth / 2));
                     break;
-                case Key.R:
-                    if (rover.Yposition > 0) rover.Yposition--;
-                    break;
-                case Key.T:
-                    if (rover.Yposition < 49) rover.Yposition++;
-                    break;
-                case Key.Z:
-                    if (rover.Xposition < 49) rover.Xposition--;
-                    break;
-                case Key.U:
-                    if (rover.Xposition > 0) rover.Xposition++;
-                    break;
-                case Key.Q:
-                    string aktualisCella = map[rover.Yposition, rover.Xposition];
-                    if (aktualisCella == "G" || aktualisCella == "Y" || aktualisCella == "B")
-                    {
-                        map[rover.Yposition, rover.Xposition] = ".";
-                        if (gemImg[rover.Yposition, rover.Xposition] != null)
-                        {
-                            jatekter.Children.Remove(gemImg[rover.Yposition, rover.Xposition]);
-                            gemImg[rover.Yposition, rover.Xposition] = null;
-                        }
-                    }
-                    break;
-                case Key.F:
-                    ido.Text = $"Idő: {Time.GetCurrentTimeString()}";
-                    break;
-                case Key.E:
-                    if (!gameStarted)
-                    {
-                        simTimer.Start();
-                        gameStarted = true;
-                    }
-                    gameOn = !gameOn;
-                    break;
             }
-            RefreshRoverPosition();
         }
 
 
