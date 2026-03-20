@@ -55,8 +55,6 @@ namespace PSZK_MarsRoverProject
         double visualY;
         double stepX = 0;
         double stepY = 0;
-        double lastVisualX = -1;
-        double lastVisualY = -1;
         bool isCalculatingPath = false;
         public MainWindow()
         {
@@ -75,8 +73,8 @@ namespace PSZK_MarsRoverProject
             obstacleImage2 = new BitmapImage(new Uri("pack://application:,,,/Images/obst2.png"));
             obstacleImage3 = new BitmapImage(new Uri("pack://application:,,,/Images/obst3.png"));
             gemimage = new BitmapImage(new Uri("pack://application:,,,/Images/bluegem.png"));
-            gemimage1 = new BitmapImage(new Uri("pack://application:,,,/Images/zoldasvany.png"));
-            gemimage2 = new BitmapImage(new Uri("pack://application:,,,/Images/sargaasvany.png"));
+            gemimage1 = new BitmapImage(new Uri("pack://application:,,,/Images/zoldasvany2.png"));
+            gemimage2 = new BitmapImage(new Uri("pack://application:,,,/Images/sargaasvany2.png"));
             simTimer = new DispatcherTimer();
             visualX = sPosition[1];
             visualY = sPosition[0];
